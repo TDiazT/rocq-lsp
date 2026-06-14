@@ -42,6 +42,16 @@ test/server/node_modules: test/server/package.json
 test: build test/server/node_modules
 	cd test/server && npm test
 
+COVERAGE_DIR := _coverage
+
+.PHONY: coverage
+coverage: coq_boot test/server/node_modules
+	rm -rf $(COVERAGE_DIR) && mkdir -p $(COVERAGE_DIR)
+	dune build --instrument-with bisect_ppx $(DUNEOPT) $(PKG_SET)
+	cd test/server && BISECT_FILE=$(CURDIR)/$(COVERAGE_DIR)/bisect npm test
+	bisect-ppx-report html --coverage-path $(COVERAGE_DIR) -o $(COVERAGE_DIR)/html
+	bisect-ppx-report summary --coverage-path $(COVERAGE_DIR)
+
 .PHONY: test-compiler
 test-compiler:
 	dune runtest

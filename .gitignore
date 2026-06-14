@@ -15,6 +15,9 @@ nix/profiles/
 # examples config, ignore for now
 examples/.vscode
 
+# Coverage output
+_coverage
+
 # Related to the JS build and testing
 /lsp-server/jsoo/coq-fs-core.js
 /lsp-server/jsoo/coq_lsp_worker.bc.cjs
