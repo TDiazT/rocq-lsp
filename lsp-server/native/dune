@@ -2,5 +2,6 @@
  (name coq_lsp)
  (modules coq_lsp)
  (public_name coq-lsp)
+ (instrumentation (backend bisect_ppx))
  (link_flags -linkall)
  (libraries controller threads cmdliner))

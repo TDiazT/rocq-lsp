@@ -1,6 +1,7 @@
 (library
  (name fleche_lsp)
  (public_name coq-lsp.lsp)
+ (instrumentation (backend bisect_ppx))
  (preprocess
   (staged_pps ppx_import ppx_deriving_yojson))
  (libraries lang coq serlib fleche yojson threads))

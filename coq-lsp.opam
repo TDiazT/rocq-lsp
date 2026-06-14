@@ -40,6 +40,9 @@ depends: [
   # unit testing
   "ppx_inline_test"     { >= "v0.15.0" }
 
+  # coverage measurement
+  "bisect_ppx"          { dev }
+
   # This is now a hard dep due to API changes in 1.9.7
   "ocamlfind" { >= "1.9.8" }
 
