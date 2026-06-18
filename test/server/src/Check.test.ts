@@ -1,118 +1,53 @@
-import * as Protocol from "vscode-languageserver-protocol";
 import * as Types from "vscode-languageserver-types";
 import * as LanguageServer from "./LanguageServer";
+import { openAndWaitForDiagnostics } from "./helpers";
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Non-standard params: tests initialization with invalid rootUri and no workspaceFolders.
 test("Open file with wrong URI", async () => {
-  let languageServer = LanguageServer.start();
-
-  // Enable to print server debug messages
-  // languageServer.onNotification(Protocol.LogTraceNotification.type, (msg : Protocol.LogTraceParams) => {
-  //   console.log(msg);
-  // });
-
-  // languageServer.onNotification(Protocol.LogMessageNotification.type, (msg : Protocol.LogMessageParams) => {
-  //   console.log(msg);
-  // });
-
-  let initializeParameters: Partial<Protocol.InitializeParams> = {
+  const server = LanguageServer.start();
+  await server.initialize({
     rootPath: ".",
     rootUri: ".",
     trace: "verbose",
     workspaceFolders: null,
-  };
-
-  await languageServer.initialize(initializeParameters);
-
-  let textDocument = Types.TextDocumentItem.create(
-    "wrong_file.v",
-    "coq",
-    0,
-    "Definition a := 3.",
-  );
-
-  let p = new Promise<Protocol.PublishDiagnosticsParams>((resolve) => {
-    languageServer.onNotification(
-      Protocol.PublishDiagnosticsNotification.type,
-      resolve,
-    );
   });
-
-  await languageServer.sendNotification(
-    Protocol.DidOpenTextDocumentNotification.type,
-    {
-      textDocument,
-    },
-  );
-
-  const checkDiags = async (params: Protocol.PublishDiagnosticsParams) => {
-    if (params.diagnostics.length == 0) return "ok";
-    else throw "wrong number of diags";
-  };
-
-  await p.then(checkDiags).finally(languageServer.exit);
-  // write more compositionally:
-  // await l.diags.next().then(checkDiags).finally(l.exit);
+  try {
+    const textDocument = Types.TextDocumentItem.create(
+      "wrong_file.v",
+      "coq",
+      0,
+      "Definition a := 3.",
+    );
+    const diags = await openAndWaitForDiagnostics(server, textDocument);
+    expect(diags.diagnostics).toHaveLength(0);
+  } finally {
+    await server.exit();
+  }
 });
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 test("Open non-existing file, with URI", async () => {
-  let languageServer = LanguageServer.start();
-  await languageServer.initialize({ trace: "verbose" });
-
-  let textDocument = LanguageServer.openExampleEphemeral(
-    "ephemeral.v",
-    "Definition a := 3.",
-  );
-
-  await languageServer.sendNotification(
-    Protocol.DidOpenTextDocumentNotification.type,
-    {
-      textDocument,
-    },
-  );
-  let p = new Promise<Protocol.PublishDiagnosticsParams>((resolve) => {
-    languageServer.onNotification(
-      Protocol.PublishDiagnosticsNotification.type,
-      resolve,
+  const server = LanguageServer.start();
+  await server.initialize({ trace: "verbose" });
+  try {
+    const textDocument = LanguageServer.openExampleEphemeral(
+      "ephemeral.v",
+      "Definition a := 3.",
     );
-  });
-
-  const checkDiags = async (params: Protocol.PublishDiagnosticsParams) => {
-    if (params.diagnostics.length == 0) return "ok";
-    else throw "wrong number of diags";
-  };
-
-  await p.then(checkDiags).finally(languageServer.exit);
-  // write more compositionally:
-  // await l.diags.next().then(checkDiags).finally(l.exit);
+    const diags = await openAndWaitForDiagnostics(server, textDocument);
+    expect(diags.diagnostics).toHaveLength(0);
+  } finally {
+    await server.exit();
+  }
 });
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 test("Fully checks ex1.v", async () => {
-  let languageServer = LanguageServer.start();
-  await languageServer.initialize({ trace: "verbose" });
-
-  let textDocument = LanguageServer.openExample("ex1.v");
-  await languageServer.sendNotification(
-    Protocol.DidOpenTextDocumentNotification.type,
-    {
-      textDocument,
-    },
-  );
-  let p = new Promise<Protocol.PublishDiagnosticsParams>((resolve) => {
-    languageServer.onNotification(
-      Protocol.PublishDiagnosticsNotification.type,
-      resolve,
-    );
-  });
-
-  const checkDiags = async (params: Protocol.PublishDiagnosticsParams) => {
-    if (params.diagnostics.length == 0) return "ok";
-    else throw "wrong number of diags";
-  };
-
-  await p.then(checkDiags).finally(languageServer.exit);
-  // write more compositionally:
-  // await l.diags.next().then(checkDiags).finally(l.exit);
+  const server = LanguageServer.start();
+  await server.initialize({ trace: "verbose" });
+  try {
+    const textDocument = LanguageServer.openExample("ex1.v");
+    const diags = await openAndWaitForDiagnostics(server, textDocument);
+    expect(diags.diagnostics).toHaveLength(0);
+  } finally {
+    await server.exit();
+  }
 });
