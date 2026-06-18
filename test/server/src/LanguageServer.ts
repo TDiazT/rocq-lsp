@@ -40,6 +40,16 @@ export function openExample(filename: string) {
   );
 }
 
+export function openFixture(filename: string) {
+  let filepath = path.join(__dirname, "..", "fixtures", filename);
+  return Types.TextDocumentItem.create(
+    toURI(filepath),
+    "coq",
+    0,
+    fs.readFileSync(filepath, "utf-8"),
+  );
+}
+
 export interface LanguageServer extends Protocol.MessageConnection {
   initialize(
     initializeParameters?: Partial<Protocol.InitializeParams>,

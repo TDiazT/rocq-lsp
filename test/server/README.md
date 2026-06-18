@@ -43,6 +43,8 @@ npx jest --verbose
 | Diagnostics — wrong URI | `textDocument/publishDiagnostics` | `Check.test.ts` | covered |
 | Diagnostics — ephemeral file | `textDocument/publishDiagnostics` | `Check.test.ts` | covered |
 | Diagnostics — existing file | `textDocument/publishDiagnostics` | `Check.test.ts` | covered |
+| Diagnostics — valid file (snapshot) | `textDocument/publishDiagnostics` | `Diagnostics.test.ts` | covered |
+| Diagnostics — type error (snapshot) | `textDocument/publishDiagnostics` | `Diagnostics.test.ts` | covered |
 | Hover | `textDocument/hover` | — | not yet covered |
 | Go to definition | `textDocument/definition` | — | not yet covered |
 | Completion | `textDocument/completion` | — | not yet covered |
@@ -59,9 +61,25 @@ When adding a new characterization test:
    sending `DidOpen`, avoiding the race condition where a fast server response
    arrives before the listener is attached.
 
-2. Use `LanguageServer.openExample(filename)` for files under `examples/`, or
-   `LanguageServer.openExampleEphemeral(filename, contents)` for inline
-   content.
+2. Use `LanguageServer.openFixture(filename)` for stable test fixtures under
+   `test/server/fixtures/`, `LanguageServer.openExample(filename)` for files
+   under `examples/`, or `LanguageServer.openExampleEphemeral(filename,
+   contents)` for inline content.
 
-3. Do not use `setTimeout` or `sleep`. If you need to wait for something, model
+3. For snapshot tests, use `openAndWaitForFinalDiagnostics` instead of
+   `openAndWaitForDiagnostics`. It debounces multiple incremental batches from
+   Flèche and resolves with the last one, so the snapshot captures the final
+   server state.
+
+4. Do not use `setTimeout` or `sleep`. If you need to wait for something, model
    it as a Promise that resolves on the relevant notification or response.
+
+## Updating snapshots
+
+If a server change intentionally alters LSP output, update the snapshots:
+
+```bash
+npx jest --updateSnapshot
+```
+
+Review each changed snapshot before committing — the diff is the record of what changed in the protocol.

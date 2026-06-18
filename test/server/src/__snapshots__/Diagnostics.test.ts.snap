@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`publishDiagnostics: type error produces error diagnostic 1`] = `
+{
+  "diagnostics": [
+    {
+      "message": "The term "True" has type "Prop" while it is expected to have type "nat".",
+      "range": {
+        "end": {
+          "character": 30,
+          "line": 1,
+        },
+        "start": {
+          "character": 26,
+          "line": 1,
+        },
+      },
+      "severity": 1,
+    },
+  ],
+  "uri": "<root>/test/server/fixtures/diagnostics_error.v",
+}
+`;
+
+exports[`publishDiagnostics: valid file produces no diagnostics 1`] = `
+{
+  "diagnostics": [],
+  "uri": "<root>/test/server/fixtures/diagnostics_clean.v",
+}
+`;
