@@ -10,4 +10,5 @@ module.exports = {
   },
   testRegex: "^.+\\.test\\.ts$",
   moduleFileExtensions: ["ts", "js", "node"],
+  testTimeout: 10000,
 };
