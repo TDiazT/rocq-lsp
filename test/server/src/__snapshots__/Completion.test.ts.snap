@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`completion at an identifier position returns a non-empty list 1`] = `
+{
+  "firstItem": {
+    "label": "first_value",
+  },
+  "isIncomplete": true,
+  "itemCount": 3,
+}
+`;
+
+exports[`completion in a comment returns the same local candidates 1`] = `
+{
+  "firstItem": {
+    "label": "first_value",
+  },
+  "isIncomplete": true,
+  "itemCount": 3,
+}
+`;

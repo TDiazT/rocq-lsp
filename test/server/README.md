@@ -50,7 +50,8 @@ npx jest --verbose
 | Hover — whitespace returns null (snapshot) | `textDocument/hover` | `Hover.test.ts` | covered |
 | Go to definition — same-file usage (snapshot) | `textDocument/definition` | `Definition.test.ts` | covered |
 | Go to definition — whitespace returns null (snapshot) | `textDocument/definition` | `Definition.test.ts` | covered |
-| Completion | `textDocument/completion` | — | not yet covered |
+| Completion — at identifier (snapshot) | `textDocument/completion` | `Completion.test.ts` | covered |
+| Completion — in comment (snapshot) | `textDocument/completion` | `Completion.test.ts` | covered |
 | Document symbols | `textDocument/documentSymbol` | — | not yet covered |
 | Proof goals (extension) | `proof/goals` | — | not yet covered |
 | File progress (extension) | `$/coq/fileProgress` | — | not yet covered |
