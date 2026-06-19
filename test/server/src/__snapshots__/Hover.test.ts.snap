@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`hover on a function definition shows type signature and full path 1`] = `
+{
+  "contents": {
+    "kind": "markdown",
+    "value": "\`\`\`coq
+id_nat: nat -> nat
+\`\`\`
+ - **full path**: \`hover.id_nat\`
+",
+  },
+  "range": {
+    "end": {
+      "character": 39,
+      "line": 4,
+    },
+    "start": {
+      "character": 0,
+      "line": 4,
+    },
+  },
+}
+`;
+
+exports[`hover on a simple definition returns its type 1`] = `
+{
+  "contents": {
+    "kind": "markdown",
+    "value": "\`\`\`coq
+answer: nat
+\`\`\`
+ - **full path**: \`hover.answer\`
+",
+  },
+  "range": {
+    "end": {
+      "character": 30,
+      "line": 1,
+    },
+    "start": {
+      "character": 0,
+      "line": 1,
+    },
+  },
+}
+`;
+
+exports[`hover on whitespace returns null 1`] = `null`;

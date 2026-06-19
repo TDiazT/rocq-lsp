@@ -45,7 +45,9 @@ npx jest --verbose
 | Diagnostics — existing file | `textDocument/publishDiagnostics` | `Check.test.ts` | covered |
 | Diagnostics — valid file (snapshot) | `textDocument/publishDiagnostics` | `Diagnostics.test.ts` | covered |
 | Diagnostics — type error (snapshot) | `textDocument/publishDiagnostics` | `Diagnostics.test.ts` | covered |
-| Hover | `textDocument/hover` | — | not yet covered |
+| Hover — simple definition (snapshot) | `textDocument/hover` | `Hover.test.ts` | covered |
+| Hover — function definition (snapshot) | `textDocument/hover` | `Hover.test.ts` | covered |
+| Hover — whitespace returns null (snapshot) | `textDocument/hover` | `Hover.test.ts` | covered |
 | Go to definition | `textDocument/definition` | — | not yet covered |
 | Completion | `textDocument/completion` | — | not yet covered |
 | Document symbols | `textDocument/documentSymbol` | — | not yet covered |
