@@ -48,7 +48,8 @@ npx jest --verbose
 | Hover — simple definition (snapshot) | `textDocument/hover` | `Hover.test.ts` | covered |
 | Hover — function definition (snapshot) | `textDocument/hover` | `Hover.test.ts` | covered |
 | Hover — whitespace returns null (snapshot) | `textDocument/hover` | `Hover.test.ts` | covered |
-| Go to definition | `textDocument/definition` | — | not yet covered |
+| Go to definition — same-file usage (snapshot) | `textDocument/definition` | `Definition.test.ts` | covered |
+| Go to definition — whitespace returns null (snapshot) | `textDocument/definition` | `Definition.test.ts` | covered |
 | Completion | `textDocument/completion` | — | not yet covered |
 | Document symbols | `textDocument/documentSymbol` | — | not yet covered |
 | Proof goals (extension) | `proof/goals` | — | not yet covered |

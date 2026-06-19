@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`definition of \`answer\` usage jumps to its definition site 1`] = `
+{
+  "range": {
+    "end": {
+      "character": 30,
+      "line": 1,
+    },
+    "start": {
+      "character": 0,
+      "line": 1,
+    },
+  },
+  "uri": "<root>/test/server/fixtures/definition.v",
+}
+`;
+
+exports[`definition of \`double\` usage jumps to its definition site 1`] = `
+{
+  "range": {
+    "end": {
+      "character": 43,
+      "line": 3,
+    },
+    "start": {
+      "character": 0,
+      "line": 3,
+    },
+  },
+  "uri": "<root>/test/server/fixtures/definition.v",
+}
+`;
+
+exports[`definition on whitespace returns null 1`] = `null`;
