@@ -53,7 +53,9 @@ npx jest --verbose
 | Completion — at identifier (snapshot) | `textDocument/completion` | `Completion.test.ts` | covered |
 | Completion — in comment (snapshot) | `textDocument/completion` | `Completion.test.ts` | covered |
 | Document symbols — definitions and lemmas (snapshot) | `textDocument/documentSymbol` | `DocumentSymbol.test.ts` | covered |
-| Proof goals (extension) | `proof/goals` | — | not yet covered |
+| Proof goals — inside proof with subgoals (snapshot) | `proof/goals` | `ProofGoals.test.ts` | covered |
+| Proof goals — at Qed, no goals (snapshot) | `proof/goals` | `ProofGoals.test.ts` | covered |
+| Proof goals — outside proof (snapshot) | `proof/goals` | `ProofGoals.test.ts` | covered |
 | File progress (extension) | `$/coq/fileProgress` | — | not yet covered |
 
 ## Adding tests

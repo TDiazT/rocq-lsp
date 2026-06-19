@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`proof/goals at Qed returns no goals 1`] = `
+{
+  "messages": [],
+  "position": {
+    "character": 4,
+    "line": 6,
+  },
+  "program": [],
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/proof_goals.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`proof/goals inside a proof returns the current goal state 1`] = `
+{
+  "goals": {
+    "bullet": null,
+    "given_up": [],
+    "goals": [
+      {
+        "hyps": [],
+        "info": {
+          "evar": [
+            "Ser_Evar",
+            7,
+          ],
+          "name": null,
+        },
+        "ty": "0 + 0 = 0",
+      },
+      {
+        "hyps": [
+          {
+            "def": null,
+            "names": [
+              "n",
+            ],
+            "ty": "nat",
+          },
+          {
+            "def": null,
+            "names": [
+              "IHn",
+            ],
+            "ty": "n + 0 = n",
+          },
+        ],
+        "info": {
+          "evar": [
+            "Ser_Evar",
+            10,
+          ],
+          "name": null,
+        },
+        "ty": "S n + 0 = S n",
+      },
+    ],
+    "shelf": [],
+    "stack": [],
+  },
+  "messages": [],
+  "position": {
+    "character": 14,
+    "line": 3,
+  },
+  "program": [],
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/proof_goals.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`proof/goals outside a proof returns no goals 1`] = `
+{
+  "messages": [],
+  "position": {
+    "character": 0,
+    "line": 0,
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/proof_goals.v",
+    "version": 0,
+  },
+}
+`;
