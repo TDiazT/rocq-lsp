@@ -52,7 +52,7 @@ npx jest --verbose
 | Go to definition — whitespace returns null (snapshot) | `textDocument/definition` | `Definition.test.ts` | covered |
 | Completion — at identifier (snapshot) | `textDocument/completion` | `Completion.test.ts` | covered |
 | Completion — in comment (snapshot) | `textDocument/completion` | `Completion.test.ts` | covered |
-| Document symbols | `textDocument/documentSymbol` | — | not yet covered |
+| Document symbols — definitions and lemmas (snapshot) | `textDocument/documentSymbol` | `DocumentSymbol.test.ts` | covered |
 | Proof goals (extension) | `proof/goals` | — | not yet covered |
 | File progress (extension) | `$/coq/fileProgress` | — | not yet covered |
 

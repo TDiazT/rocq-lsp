@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`documentSymbol lists all top-level definitions and lemmas 1`] = `
+[
+  {
+    "kind": 12,
+    "name": "foo",
+    "range": {
+      "end": {
+        "character": 26,
+        "line": 1,
+      },
+      "start": {
+        "character": 0,
+        "line": 1,
+      },
+    },
+    "selectionRange": {
+      "end": {
+        "character": 14,
+        "line": 1,
+      },
+      "start": {
+        "character": 11,
+        "line": 1,
+      },
+    },
+  },
+  {
+    "kind": 12,
+    "name": "bar",
+    "range": {
+      "end": {
+        "character": 22,
+        "line": 3,
+      },
+      "start": {
+        "character": 0,
+        "line": 3,
+      },
+    },
+    "selectionRange": {
+      "end": {
+        "character": 9,
+        "line": 3,
+      },
+      "start": {
+        "character": 6,
+        "line": 3,
+      },
+    },
+  },
+  {
+    "kind": 12,
+    "name": "baz",
+    "range": {
+      "end": {
+        "character": 28,
+        "line": 7,
+      },
+      "start": {
+        "character": 2,
+        "line": 7,
+      },
+    },
+    "selectionRange": {
+      "end": {
+        "character": 16,
+        "line": 7,
+      },
+      "start": {
+        "character": 13,
+        "line": 7,
+      },
+    },
+  },
+]
+`;
