@@ -64,6 +64,20 @@ module GoalsAnswer : sig
   [@@deriving to_yojson]
 end
 
+module InterpretAnswer : sig
+  type ('goals, 'pp) t =
+    { textDocument : Doc.VersionedTextDocumentIdentifier.t
+    ; position : Lang.Point.t
+    ; range : Lang.Range.t option [@default None]
+    ; goals : ('goals, 'pp) JCoq.Goals.reified option [@default None]
+    ; program : JCoq.State.Proof.Program.t Names.Id.Map.t option [@default None]
+    ; messages : 'pp Message.t list
+    ; error : 'pp option [@default None]
+    ; completed : bool
+    }
+  [@@deriving to_yojson]
+end
+
 (** Coq-lsp-specific *)
 module CompletionStatus : sig
   type t =
