@@ -1,0 +1,339 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`interpret backward before the first sentence returns null range 1`] = `
+{
+  "completed": false,
+  "messages": [],
+  "position": {
+    "character": 0,
+    "line": 0,
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/interpret.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`interpret backward from a checkpoint returns the previous sentence 1`] = `
+{
+  "completed": false,
+  "goals": {
+    "bullet": null,
+    "given_up": [],
+    "goals": [
+      {
+        "hyps": [
+          {
+            "def": null,
+            "names": [
+              "n",
+            ],
+            "ty": "nat",
+          },
+        ],
+        "info": {
+          "evar": [
+            "Ser_Evar",
+            3,
+          ],
+          "name": null,
+        },
+        "ty": "n + 0 = n",
+      },
+    ],
+    "shelf": [],
+    "stack": [],
+  },
+  "messages": [],
+  "position": {
+    "character": 14,
+    "line": 3,
+  },
+  "program": [],
+  "range": {
+    "end": {
+      "character": 6,
+      "line": 2,
+    },
+    "start": {
+      "character": 0,
+      "line": 2,
+    },
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/interpret.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`interpret end returns the last sentence with completed: true 1`] = `
+{
+  "completed": true,
+  "messages": [],
+  "position": {
+    "character": 6,
+    "line": 12,
+  },
+  "program": [],
+  "range": {
+    "end": {
+      "character": 6,
+      "line": 12,
+    },
+    "start": {
+      "character": 0,
+      "line": 12,
+    },
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/interpret.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`interpret forward at the end of the document returns the last sentence 1`] = `
+{
+  "completed": true,
+  "messages": [],
+  "position": {
+    "character": 6,
+    "line": 12,
+  },
+  "program": [],
+  "range": {
+    "end": {
+      "character": 6,
+      "line": 12,
+    },
+    "start": {
+      "character": 0,
+      "line": 12,
+    },
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/interpret.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`interpret forward from a checkpoint returns the next sentence 1`] = `
+{
+  "completed": false,
+  "goals": {
+    "bullet": null,
+    "given_up": [],
+    "goals": [
+      {
+        "hyps": [],
+        "info": {
+          "evar": [
+            "Ser_Evar",
+            7,
+          ],
+          "name": null,
+        },
+        "ty": "0 + 0 = 0",
+      },
+      {
+        "hyps": [
+          {
+            "def": null,
+            "names": [
+              "n",
+            ],
+            "ty": "nat",
+          },
+          {
+            "def": null,
+            "names": [
+              "IHn",
+            ],
+            "ty": "n + 0 = n",
+          },
+        ],
+        "info": {
+          "evar": [
+            "Ser_Evar",
+            10,
+          ],
+          "name": null,
+        },
+        "ty": "S n + 0 = S n",
+      },
+    ],
+    "shelf": [],
+    "stack": [],
+  },
+  "messages": [],
+  "position": {
+    "character": 6,
+    "line": 2,
+  },
+  "program": [],
+  "range": {
+    "end": {
+      "character": 14,
+      "line": 3,
+    },
+    "start": {
+      "character": 2,
+      "line": 3,
+    },
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/interpret.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`interpret forward onto a failing sentence carries its error (F5) 1`] = `
+{
+  "completed": false,
+  "error": "In environment
+n : nat
+Unable to unify "n + 1" with "n".",
+  "goals": {
+    "bullet": null,
+    "given_up": [],
+    "goals": [
+      {
+        "hyps": [
+          {
+            "def": null,
+            "names": [
+              "n",
+            ],
+            "ty": "nat",
+          },
+        ],
+        "info": {
+          "evar": [
+            "Ser_Evar",
+            17,
+          ],
+          "name": null,
+        },
+        "ty": "n = n + 1",
+      },
+    ],
+    "shelf": [],
+    "stack": [],
+  },
+  "messages": [],
+  "position": {
+    "character": 11,
+    "line": 10,
+  },
+  "program": [],
+  "range": {
+    "end": {
+      "character": 14,
+      "line": 11,
+    },
+    "start": {
+      "character": 2,
+      "line": 11,
+    },
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/interpret.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`interpret point beyond EOF clamps to the last sentence 1`] = `
+{
+  "completed": true,
+  "messages": [],
+  "position": {
+    "character": 0,
+    "line": 50,
+  },
+  "program": [],
+  "range": {
+    "end": {
+      "character": 6,
+      "line": 12,
+    },
+    "start": {
+      "character": 0,
+      "line": 12,
+    },
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/interpret.v",
+    "version": 0,
+  },
+}
+`;
+
+exports[`interpret point inside a sentence interprets through it 1`] = `
+{
+  "completed": false,
+  "goals": {
+    "bullet": "The current bullet - is unfinished.",
+    "given_up": [],
+    "goals": [
+      {
+        "hyps": [
+          {
+            "def": null,
+            "names": [
+              "n",
+            ],
+            "ty": "nat",
+          },
+          {
+            "def": null,
+            "names": [
+              "IHn",
+            ],
+            "ty": "n + 0 = n",
+          },
+        ],
+        "info": {
+          "evar": [
+            "Ser_Evar",
+            13,
+          ],
+          "name": null,
+        },
+        "ty": "S n = S n",
+      },
+    ],
+    "shelf": [],
+    "stack": [
+      [
+        [],
+        [],
+      ],
+    ],
+  },
+  "messages": [],
+  "position": {
+    "character": 14,
+    "line": 5,
+  },
+  "program": [],
+  "range": {
+    "end": {
+      "character": 23,
+      "line": 5,
+    },
+    "start": {
+      "character": 11,
+      "line": 5,
+    },
+  },
+  "textDocument": {
+    "uri": "<root>/test/server/fixtures/interpret.v",
+    "version": 0,
+  },
+}
+`;

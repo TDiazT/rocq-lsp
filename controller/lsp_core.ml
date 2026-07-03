@@ -451,6 +451,32 @@ let do_document ~params =
 let do_save_vo = do_document_request_maybe ~handler:Rq_save.request
 let do_lens = do_document_request_maybe ~handler:Rq_lens.request
 
+let do_interpret ~params =
+  let pp_format = get_pp_format params in
+  match ostring_field "mode" params with
+  | Some "end" ->
+    let handler = Rq_interpret.request_end ~pp_format () in
+    do_document_request ~postpone:true ~params ~handler
+  | Some (("forward" | "backward" | "point") as m) ->
+    let uri, version = Helpers.get_uri_oversion params in
+    let l, c = Helpers.get_position params in
+    (* The scheduler point is the *check target*: for [forward] it sits just
+       past the client position so Flèche elaborates exactly one more
+       sentence in lazy mode; sentence selection uses the raw position. *)
+    let mode, point =
+      match m with
+      | "forward" -> (Rq_interpret.Forward, (l, c + 1))
+      | "backward" -> (Rq_interpret.Backward, (l, c))
+      | _ -> (Rq_interpret.Point, (l, c))
+    in
+    let handler = Rq_interpret.request ~pp_format ~mode ~position:(l, c) () in
+    Rq.Action.Data
+      (Request.Data.PosRequest { uri; handler; point; version; postpone = true })
+  | Some m ->
+    Rq.Action.error
+      (-32602, Format.asprintf "Invalid params: unknown mode %s" m)
+  | None -> Rq.Action.error (-32602, "Invalid params: mode is required")
+
 (* could be smarter *)
 let do_action ~params =
   let range = field "range" params in
@@ -647,6 +673,7 @@ let dispatch_request ~token ~method_ ~params : Rq.Action.t =
   | "textDocument/codeAction" -> do_action ~params
   (* Proof-specific stuff *)
   | "proof/goals" -> do_goals ~params
+  | "proof/interpret" -> do_interpret ~params
   (* Proof-specific stuff *)
   | "coq/saveVo" -> do_save_vo ~params
   (* Coq specific stuff *)

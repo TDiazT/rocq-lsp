@@ -56,6 +56,7 @@ npx jest --verbose
 | Proof goals — inside proof with subgoals (snapshot) | `proof/goals` | `ProofGoals.test.ts` | covered |
 | Proof goals — at Qed, no goals (snapshot) | `proof/goals` | `ProofGoals.test.ts` | covered |
 | Proof goals — outside proof (snapshot) | `proof/goals` | `ProofGoals.test.ts` | covered |
+| Manual navigation — forward/backward/point/end, lazy checking (snapshot) | `proof/interpret` | `Interpret.test.ts`, `InterpretLazy.test.ts` | covered |
 | File progress (extension) | `$/coq/fileProgress` | — | not yet covered |
 
 ## Adding tests

@@ -14,6 +14,7 @@
  - [Extensions to the LSP specification](#extensions-to-the-lsp-specification)
     * [Extra diagnostics data](#extra-diagnostics-data)
     * [Goal Display](#goal-display)
+    * [`proof/interpret`](#proofinterpret)
     * [File checking progress](#file-checking-progress)
     * [Document Ast Request](#document-ast-request)
     * [.vo file saving](#vo-file-saving)
@@ -463,6 +464,62 @@ utils for those interested in richer printing formats.
 - v0.1.2: include messages and optional error in the request response
 - v0.1.1: include position and document in the request response
 - v0.1.0: initial version, imported from lambdapi-lsp
+
+<!-- TOC --><a name="proofinterpret"></a>
+### `proof/interpret`
+
+Manual navigation ("stepping") request. Stateless: the client owns its
+checkpoint; the answer is a pure function of (document, mode, position).
+
+Parameters (extends `TextDocumentPositionParams`):
+
+```typescript
+interface InterpretParams {
+  textDocument: OVersionedTextDocumentIdentifier;
+  mode: "forward" | "backward" | "point" | "end";
+  position?: Position; // required except for mode "end"
+  pp_format?: "Pp" | "Str" | "Box"; // as in proof/goals
+}
+```
+
+Sentence selection relative to `position` (a sentence is a Flèche node):
+
+| mode | selected sentence | may extend checking |
+|---|---|---|
+| `forward` | first sentence ending strictly after `position` (at a sentence boundary — the normal stepping pattern — that is the next sentence; inside a sentence it is that sentence itself), clamped to the last sentence at EOF | by exactly one sentence |
+| `backward` | last sentence ending strictly before `position` | not beyond the given position (a pure lookup when called on already-checked positions, the normal stepping pattern) |
+| `point` | last sentence starting at/before `position` (through the sentence under the cursor) | through that sentence |
+| `end` | last sentence of the document | full document |
+
+Answer: `InterpretAnswer`, a `GoalsAnswer` superset. `goals`, `messages` and
+`error` always describe the *selected sentence's node* (its post-state and
+its diagnostics), so a failing step carries its error even when queried at a
+sentence boundary. `range` is the selected sentence's range (the client's new
+checkpoint is `range.end`); `range`, `goals` and `error` are omitted
+(undefined) when retracted before the first sentence (`messages` is still
+present, as `[]`). `completed: true` means the selected sentence is the last
+one of a fully-checked document.
+
+With `check_only_on_request: true` the request bounds checking (true manual
+mode); with eager checking it is a lookup over already-checked sentences.
+
+Ordering and staleness: responses are correlated to requests by JSON-RPC
+`id`, not by arrival order. When several positional requests are outstanding
+on one document, they are answered as the (sequential, per-document) checker
+reaches their positions, not necessarily in the order the requests arrived.
+Postponed requests are cancellable via standard `$/cancelRequest` (answered
+with `-32800`).
+
+Migration from VsRocq:
+
+| VsRocq | rocq-lsp |
+|---|---|
+| `prover/stepForward` | `proof/interpret` `mode: "forward"` at the client checkpoint |
+| `prover/stepBackward` | `proof/interpret` `mode: "backward"` at the client checkpoint |
+| `prover/interpretToPoint` | `proof/interpret` `mode: "point"` at the cursor |
+| `prover/interpretToEnd` | `proof/interpret` `mode: "end"` |
+| `prover/moveCursor` (pushed) | client-side: move to `range.end` of the answer |
+| `prover/blockOnError` (pushed) | client-side policy on `error != null` |
 
 <!-- TOC --><a name="file-checking-progress"></a>
 ### File checking progress

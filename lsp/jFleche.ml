@@ -108,6 +108,24 @@ module GoalsAnswer = struct
   [@@deriving yojson]
 end
 
+(** Answer to the [proof/interpret] request: a [GoalsAnswer] superset. The
+    [goals]/[messages]/[error] fields describe the *selected sentence* (its
+    node), never a positional lookup, so sentence diagnostics are always
+    present at step boundaries. *)
+module InterpretAnswer = struct
+  type ('goals, 'pp) t =
+    { textDocument : Doc.VersionedTextDocumentIdentifier.t
+    ; position : Lang.Point.t
+    ; range : Lang.Range.t option [@default None]
+    ; goals : ('goals, 'pp) JCoq.Goals.reified option [@default None]
+    ; program : JCoq.State.Proof.Program.t Names.Id.Map.t option [@default None]
+    ; messages : 'pp Message.t list
+    ; error : 'pp option [@default None]
+    ; completed : bool
+    }
+  [@@deriving to_yojson]
+end
+
 (** Pull Diagnostics *)
 module CompletionStatus = struct
   type t =
