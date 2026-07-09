@@ -1,4 +1,4 @@
-import { Uri, WebviewPanel, window, ViewColumn } from "vscode";
+import { Uri, WebviewPanel, window, ViewColumn, commands } from "vscode";
 import {
   BaseLanguageClient,
   RequestType,
@@ -32,6 +32,12 @@ export class InfoPanel {
   private extensionUri: Uri;
   private listeners: Array<(goals: GoalAnswer<String, String>) => void> = [];
 
+  // Messages posted between panel creation and the webview's "ready"
+  // handshake would be dropped by the not-yet-listening webview; they wait
+  // here and are flushed in creation order when "ready" arrives.
+  private webviewReady = false;
+  private pendingMessages: CoqMessagePayload[] = [];
+
   constructor(extensionUri: Uri) {
     this.extensionUri = extensionUri;
 
@@ -59,6 +65,7 @@ export class InfoPanel {
 
   panelFactory() {
     let webviewOpts = { enableScripts: true, enableFindWidget: true };
+    this.webviewReady = false;
     this.panel = window.createWebviewPanel(
       "goals",
       "Goals",
@@ -73,11 +80,11 @@ export class InfoPanel {
     configManager.registerWebview(this.panel);
 
     const styleUri = this.panel.webview.asWebviewUri(
-      Uri.joinPath(this.extensionUri, "out", "views", "info", "index.css")
+      Uri.joinPath(this.extensionUri, "out", "views", "goals", "index.css")
     );
 
     const scriptUri = this.panel.webview.asWebviewUri(
-      Uri.joinPath(this.extensionUri, "out", "views", "info", "index.js")
+      Uri.joinPath(this.extensionUri, "out", "views", "goals", "index.js")
     );
 
     this.panel.webview.html = ` <!DOCTYPE html>
@@ -87,7 +94,7 @@ export class InfoPanel {
         <link rel="stylesheet" type="text/css" href="${styleUri}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="${scriptUri}" type="module"></script>
-        <title>Coq's info panel</title>
+        <title>Rocq goals</title>
     </head>
     <body>
     <div id="root">
@@ -98,6 +105,24 @@ export class InfoPanel {
     // The panel was closed by the user, guard!
     this.panel.onDidDispose(() => {
       this.panel = null;
+      this.webviewReady = false;
+      this.pendingMessages = [];
+    });
+
+    this.panel.webview.onDidReceiveMessage((msg) => {
+      if (msg?.command === "ready") {
+        // The webview drops messages posted before its script has
+        // registered a listener, so everything sent since creation waits
+        // in pendingMessages until this handshake arrives.
+        this.webviewReady = true;
+        const pending = this.pendingMessages;
+        this.pendingMessages = [];
+        for (const m of pending) {
+          this.panel?.webview.postMessage(m);
+        }
+      } else if (msg?.command === "openGoalSettings") {
+        commands.executeCommand("workbench.action.openSettings", "coq-lsp");
+      }
     });
   }
 
@@ -114,9 +139,17 @@ export class InfoPanel {
       }
     }
   }
-  postMessage({ method, params }: CoqMessagePayload) {
+  postMessage(payload: CoqMessagePayload) {
     this.ensurePanel();
-    this.panel?.webview.postMessage({ method, params });
+    if (!this.webviewReady) {
+      // Panel just created (or still booting): the webview would silently
+      // drop this message, so hold it until the "ready" handshake. Without
+      // this, the first meaningful render of a session was lost and the
+      // panel stayed on its initial empty state.
+      this.pendingMessages.push(payload);
+      return;
+    }
+    this.panel?.webview.postMessage(payload);
   }
 
   // notify the display that we are waiting for info
@@ -145,6 +178,7 @@ export class InfoPanel {
 
   // LSP Protocol extension for Goals
   updateInfoPanelForCursor(client: BaseLanguageClient, params: GoalRequest) {
+    params = { ...params, pp_format: "Pp" };
     this.requestSent(params);
     client.sendRequest(goalReq, params).then(
       (goals) => this.requestDisplay(goals),

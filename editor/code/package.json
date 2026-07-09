@@ -481,17 +481,201 @@
           }
         }
       }
+    ],
+    "colors": [
+      {
+        "id": "rocq.hypothesisIdent",
+        "description": "Color for goal hypotheses identifiers.",
+        "defaults": {
+          "dark": "#20b2aa",
+          "light": "#006400",
+          "highContrast": "#006400"
+        }
+      },
+      {
+        "id": "rocq.hypothesesSeparator",
+        "description": "Color for hypotheses separator.",
+        "defaults": {
+          "dark": "#ffffff66",
+          "light": "#00000033",
+          "highContrast": "#00000033"
+        }
+      },
+      {
+        "id": "rocq.goalId",
+        "description": "Color of goal identifiers.",
+        "defaults": {
+          "dark": "#add8e6",
+          "light": "#00008b",
+          "highContrast": "#00008b"
+        }
+      },
+      {
+        "id": "rocq.addedCharacter",
+        "description": "Color of added characters (in diffs).",
+        "defaults": {
+          "dark": "#00fa0033",
+          "light": "#00fa0033",
+          "highContrast": "#00fa0033"
+        }
+      },
+      {
+        "id": "rocq.addedCharacterBackground",
+        "description": "Color of added characters (in diffs).",
+        "defaults": {
+          "dark": "#00fa000f",
+          "light": "#00fa000f",
+          "highContrast": "#00fa000f"
+        }
+      },
+      {
+        "id": "rocq.removedCharacter",
+        "description": "Color of removed characters (in diffs).",
+        "defaults": {
+          "dark": "#fa000066",
+          "light": "#fa000066",
+          "highContrast": "#fa000066"
+        }
+      },
+      {
+        "id": "rocq.removedCharacterBackground",
+        "description": "Color of removed characters (in diffs).",
+        "defaults": {
+          "dark": "#fa000033",
+          "light": "#fa000033",
+          "highContrast": "#fa000033"
+        }
+      },
+      {
+        "id": "rocq.termNotation",
+        "description": "Color of term notations.",
+        "defaults": {
+          "dark": "#ff8c00",
+          "light": "#ff8c00",
+          "highContrast": "#ff8c00"
+        }
+      },
+      {
+        "id": "rocq.termKeyword",
+        "description": "Color of term keywords.",
+        "defaults": {
+          "dark": "#6495ed",
+          "light": "#6495ed",
+          "highContrast": "#6495ed"
+        }
+      },
+      {
+        "id": "rocq.termEvar",
+        "description": "Color of existential variables.",
+        "defaults": {
+          "dark": "#ff8c00",
+          "light": "#ff8c00",
+          "highContrast": "#ff8c00"
+        }
+      },
+      {
+        "id": "rocq.termPath",
+        "description": "Color of term paths.",
+        "defaults": {
+          "dark": "#9370d8",
+          "light": "#ff8c00",
+          "highContrast": "#ff8c00"
+        }
+      },
+      {
+        "id": "rocq.termReference",
+        "description": "Color of name references in terms.",
+        "defaults": {
+          "dark": "#7cfc00",
+          "light": "#32cd32",
+          "highContrast": "#32cd32"
+        }
+      },
+      {
+        "id": "rocq.termType",
+        "description": "Color of types in terms.",
+        "defaults": {
+          "dark": "#f08080",
+          "light": "#ff7f50",
+          "highContrast": "#ff7f50"
+        }
+      },
+      {
+        "id": "rocq.termVariable",
+        "description": "Color of variables in terms.",
+        "defaults": {
+          "dark": "#7fff00",
+          "light": "#20b2aa",
+          "highContrast": "#20b2aa"
+        }
+      },
+      {
+        "id": "rocq.debugMessage",
+        "description": "Color of debug messages.",
+        "defaults": {
+          "dark": "#9370d8",
+          "light": "#daa520",
+          "highContrast": "#daa520"
+        }
+      },
+      {
+        "id": "rocq.errorMessage",
+        "description": "Color of error messages.",
+        "defaults": {
+          "dark": "#ff0000",
+          "light": "#ff0000",
+          "highContrast": "#ff0000"
+        }
+      },
+      {
+        "id": "rocq.warningMessage",
+        "description": "Color of warning messages.",
+        "defaults": {
+          "dark": "#ffff00",
+          "light": "#ff6f00",
+          "highContrast": "#ff6f00"
+        }
+      },
+      {
+        "id": "rocq.moduleKeyword",
+        "description": "Color of module keywords.",
+        "defaults": {
+          "dark": "#6495ed",
+          "light": "#6495ed",
+          "highContrast": "#6495ed"
+        }
+      },
+      {
+        "id": "rocq.tacticKeyword",
+        "description": "Color of tactic keywords.",
+        "defaults": {
+          "dark": "#6495ed",
+          "light": "#6495ed",
+          "highContrast": "#6495ed"
+        }
+      },
+      {
+        "id": "rocq.tacticPrimitive",
+        "description": "Color of tactic primitives.",
+        "defaults": {
+          "dark": "#5f9ea0",
+          "light": "#5f9ea0",
+          "highContrast": "#5f9ea0"
+        }
+      },
+      {
+        "id": "rocq.tacticString",
+        "description": "Color of tactic strings.",
+        "defaults": {
+          "dark": "#ffa500",
+          "light": "#ffa500",
+          "highContrast": "#ffa500"
+        }
+      }
     ]
   },
   "devDependencies": {
-    "esbuild": "^0.25.10",
-    "jquery": "^3.7.1",
-    "object-hash": "^3.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "prettier": "^3.6.2",
-    "throttle-debounce": "^5.0.2",
-    "typescript": "^5.9.2",
+    "@react-hook/resize-observer": "^2.0.2",
     "@types/jquery": "^3.5.33",
     "@types/node": "^18.19.127",
     "@types/object-hash": "^3.0.6",
@@ -500,10 +684,21 @@
     "@types/throttle-debounce": "^5.0.2",
     "@types/vscode": "^1.82.0",
     "@types/vscode-webview": "^1.57.5",
-    "vscode-languageclient": "^9.0.1",
-    "vscode-languageserver-types": "^3.17.5",
     "@vscode/vsce": "^3.6.1",
-    "@vscode/webview-ui-toolkit": "^1.4.0"
+    "@vscode/webview-ui-toolkit": "^1.4.0",
+    "esbuild": "^0.25.10",
+    "jquery": "^3.7.1",
+    "object-hash": "^3.0.0",
+    "prettier": "^3.6.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.7.0",
+    "throttle-debounce": "^5.0.2",
+    "typescript": "^5.9.2",
+    "uuid": "^14.0.1",
+    "vitest": "^3.2.7",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver-types": "^3.17.5"
   },
   "dependencies": {},
   "main": "./out/src/node.js",
@@ -513,6 +708,7 @@
     "esbuild": "node esbuild.mjs",
     "typecheck": "tsc -b",
     "compile": "npm run esbuild",
-    "watch": "npm run esbuild -- --watch"
+    "watch": "npm run esbuild -- --watch",
+    "test:unit": "vitest run"
   }
 }

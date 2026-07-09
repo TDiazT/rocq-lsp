@@ -1,0 +1,54 @@
+.vsui-badge {
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  border-radius: 11px;
+  padding: 1px 7px;
+  font-size: 11px;
+  line-height: 16px;
+}
+.vsui-icon-button {
+  background: transparent;
+  color: var(--vscode-foreground);
+  border: none;
+  padding: 3px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.vsui-icon-button:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+.vsui-icon-button:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+}
+.vsui-divider {
+  border: none;
+  border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.35));
+  margin: 8px 0;
+}
+.vsui-panels { display: flex; flex-direction: column; width: 100%; }
+.vsui-tabbar { display: flex; gap: 12px; }
+.vsui-tab {
+  background: transparent;
+  color: var(--vscode-panelTitle-inactiveForeground);
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 4px 2px;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vsui-tab-active {
+  color: var(--vscode-panelTitle-activeForeground);
+  border-bottom-color: var(--vscode-panelTitle-activeBorder);
+}
+.vsui-tab:focus-visible { outline: 1px solid var(--vscode-focusBorder); }
+
+/* The real toolkit's panel view carries its own padding; without it the
+   view content sits flush against the tab bar. */
+.vsui-view {
+  padding-top: 10px;
+}

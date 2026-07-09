@@ -1,0 +1,33 @@
+/* Layout overrides for the goals view host page. The copied goal-view-ui
+   App.css centers <main>'s content vertically and gives every child a 1rem
+   vertical margin — it assumes a single full-height child, as in VsRocq.
+   This view stacks several blocks (file info, proof view, program, error),
+   so pin them to the top and tighten the spacing. Loaded after App.css so
+   these rules win by order at equal specificity. */
+main {
+  justify-content: flex-start;
+  height: auto;
+}
+
+main > * {
+  margin: 0.25rem 0;
+}
+
+/* The proof page's settings row (empty hover-help text + gear button) is a
+   mostly blank full-width row between the file header and the proof; float
+   it to the top-right corner instead of letting it occupy a row. The
+   selector pins the row by structure (the proof page's direct child that
+   directly contains the icon button) because the copied component's class
+   names are hashed by CSS modules; deeper icon buttons (accordion chevrons,
+   context toggles) sit further down the tree and don't match. */
+main {
+  position: relative;
+}
+
+main > div > div:has(> .vsui-icon-button) {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.5rem;
+  width: auto;
+  margin: 0;
+}

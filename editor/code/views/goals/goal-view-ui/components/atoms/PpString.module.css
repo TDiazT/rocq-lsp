@@ -1,0 +1,122 @@
+.Message {
+    margin-top: 12px;
+    width: 100%;
+    font-family: var(--vscode-editor-font-family);
+    font-size: var(--vscode-editor-font-size);
+}
+
+.Error {
+    color: var(--vscode-rocq-errorMessage);
+}
+
+.Warning {
+    color: var(--vscode-rocq-warningMessage);
+}
+
+.Info {
+    color: var(--vscode-editorInfo-foreground);
+}
+
+.Hint {
+    color: var(--vscode-editorInlayHint-foreground);
+}
+
+.Goal {
+    font-family: var(--vscode-editor-font-family);
+    font-size: var(--vscode-editor-font-size);
+    color: var(--vscode-editor-foreground);
+    white-space: pre-wrap;
+    width: 100%;
+    margin-top: 6px;
+}
+  
+.Hypothesis {
+    list-style: none;
+    font-family: var(--vscode-editor-font-family);
+    font-weight: var(--vscode-editor-font-weight);
+    font-size: var(--vscode-editor-font-size);
+    display: flex;
+    white-space: pre-wrap;
+}
+
+.IdentifierBlock {
+    width: max-content;
+    display: flex;
+}
+
+.Identifier {
+    color: var(--vscode-rocq-hypothesisIdent);
+}
+
+.Separator {
+    color: var(--vscode-rocq-hypothesisSeparator);
+    margin-right: 1ex;
+    margin-left: 3pt;
+}
+
+.Content {
+    color: var(--vscode-editor-foreground);
+}
+
+.constr-notation {
+  color: var(--vscode-rocq-termNotation);
+}
+.constr-keyword {
+  color: var(--vscode-rocq-termKeyword);
+}
+.constr-evar {
+  color: var(--vscode-rocq-termEvar);
+  font-style: italic;
+}
+.constr-path {
+  color: var(--vscode-rocq-termPath);
+}
+.constr-reference {
+  color: var(--vscode-rocq-termReference);
+}
+.constr-type {
+  color: var(--vscode-rocq-termType);
+}
+.constr-variable {
+  color: var(--vscode-rocq-termVariable);
+}
+.message-debug {
+  color: var(--vscode-rocq-debugMessage);
+}
+.message-error {
+  color: var(--vscode-rocq-errorMessage);
+  text-decoration: underline;
+}
+.message-warning {
+  color: var(--vscode-rocq-warningMessage);
+}
+.module-keyword {
+  color: var(--vscode-rocq-moduleKeyword);
+}
+.tactic-keyword {
+  color: var(--vscode-rocq-tacticKeyword);
+}
+.tactic-primitive {
+  color: var(--vscode-rocq-tacticPrimitive);
+}
+.tactic-string {
+  color: var(--vscode-rocq-tacticString);
+}
+
+.diff-added {
+  background-color: var(--vscode-rocq-addedCharacter);
+  text-decoration: underline;
+}
+
+.diff-added-bg {
+  background-color: var(--vscode-rocq-addedCharacterBackground);
+}
+
+.diff-removed {
+  background-color: var(--vscode-rocq-removedCharacter);
+  text-decoration: line-through;
+}
+
+.diff-removed-bg {
+  background-color: var(--vscode-rocq-removedCharacterBackground);
+}
