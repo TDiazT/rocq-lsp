@@ -1,4 +1,4 @@
-import { Uri, WebviewPanel, window, ViewColumn } from "vscode";
+import { Uri, WebviewPanel, window, ViewColumn, commands } from "vscode";
 import {
   BaseLanguageClient,
   RequestType,
@@ -73,11 +73,11 @@ export class InfoPanel {
     configManager.registerWebview(this.panel);
 
     const styleUri = this.panel.webview.asWebviewUri(
-      Uri.joinPath(this.extensionUri, "out", "views", "info", "index.css")
+      Uri.joinPath(this.extensionUri, "out", "views", "goals", "index.css")
     );
 
     const scriptUri = this.panel.webview.asWebviewUri(
-      Uri.joinPath(this.extensionUri, "out", "views", "info", "index.js")
+      Uri.joinPath(this.extensionUri, "out", "views", "goals", "index.js")
     );
 
     this.panel.webview.html = ` <!DOCTYPE html>
@@ -87,7 +87,7 @@ export class InfoPanel {
         <link rel="stylesheet" type="text/css" href="${styleUri}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="${scriptUri}" type="module"></script>
-        <title>Coq's info panel</title>
+        <title>Rocq goals</title>
     </head>
     <body>
     <div id="root">
@@ -98,6 +98,12 @@ export class InfoPanel {
     // The panel was closed by the user, guard!
     this.panel.onDidDispose(() => {
       this.panel = null;
+    });
+
+    this.panel.webview.onDidReceiveMessage((msg) => {
+      if (msg?.command === "openGoalSettings") {
+        commands.executeCommand("workbench.action.openSettings", "coq-lsp");
+      }
     });
   }
 
@@ -145,6 +151,7 @@ export class InfoPanel {
 
   // LSP Protocol extension for Goals
   updateInfoPanelForCursor(client: BaseLanguageClient, params: GoalRequest) {
+    params = { ...params, pp_format: "Pp" };
     this.requestSent(params);
     client.sendRequest(goalReq, params).then(
       (goals) => this.requestDisplay(goals),

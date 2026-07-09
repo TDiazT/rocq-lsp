@@ -1,0 +1,44 @@
+type integer = number;
+import { PpString } from "../pp-display/types";
+type Nullable<T> = T | null;
+
+export interface Goal {
+    id: string,
+    name?: Nullable<string>,
+    goal: PpString, 
+    hypotheses: PpString[],
+};
+
+export interface CollapsibleGoal extends Goal  {
+    isOpen: boolean;
+    isContextHidden: boolean;
+};
+
+export type ProofViewGoalsType = {
+    main: CollapsibleGoal[];
+    shelved: CollapsibleGoal[];
+    givenUp: CollapsibleGoal[];
+    unfocused: CollapsibleGoal[];
+};
+
+export enum ProofViewGoalsKey {
+    main = "main", 
+    shelved = "shelved", 
+    givenUp = "givenUp",
+    unfocused = "unfocused"
+}
+
+export enum MessageSeverity {
+    error = 1, 
+    warning,
+    information,
+    hint
+}
+
+export type ProofViewMessage = [MessageSeverity, PpString];
+
+export type GoalArray = Goal[];
+
+export type GoalArrayOrNull = Nullable<Goal[]>;
+
+export type ProofViewGoals = Nullable<ProofViewGoalsType>;

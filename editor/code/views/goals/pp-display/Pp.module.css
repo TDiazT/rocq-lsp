@@ -1,0 +1,39 @@
+.Container {
+    display:block;
+    width: 100%;
+}
+
+.Ellipsis {
+    color: var(--vscode-rocq-termReference);
+    font-style: italic;
+    cursor: pointer;
+}
+
+.Content {
+    white-space: pre;
+}
+
+.Box {
+    display: inline;
+    cursor: pointer;
+}
+
+.Box + .Text {
+    vertical-align: bottom;
+}
+
+.Box + .Tag {
+    vertical-align: bottom;
+}
+
+.Hovered:not(:has(.Hovered:hover)):hover {
+    border-width: 1px;
+    border-style: dashed;
+    border-color: white;
+}
+
+/* .Box:not(:has(.Box:hover)):hover {
+    border-width: 1px;
+    border-style: dashed;
+    border-color: white;
+} */

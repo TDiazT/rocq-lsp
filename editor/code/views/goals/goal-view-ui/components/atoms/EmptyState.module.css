@@ -1,0 +1,12 @@
+.EmptyStateSection {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    align-content: center;
+}
+
+
+.EmptyStateMessage {
+    font-family: var(--vscode-editor-font-family);
+    margin-left: 6px;
+}
