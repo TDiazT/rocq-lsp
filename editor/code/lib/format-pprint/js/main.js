@@ -40,6 +40,10 @@ export class FormatPrettyPrint {
       case "Pp_string":
         return $(document.createTextNode(pp[1]));
 
+      // ["Pp_sized_string", utf16-length, string]
+      case "Pp_sized_string":
+        return $(document.createTextNode(pp[2]));
+
       // ["Pp_box", ["Pp_vbox"/"Pp_hvbox"/"Pp_hovbox", _], content]
       case "Pp_box":
         let [bty, offset] = pp[1],
@@ -79,7 +83,7 @@ export class FormatPrettyPrint {
         return $([]);
 
       default:
-        console.warn("unhandled Format case", tag);
+        console.warn("unhandled Format case", pp[0]);
         return $([]);
     }
   }

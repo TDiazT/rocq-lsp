@@ -97,6 +97,7 @@ export interface GoalRequest {
 export type Pp =
   | ["Pp_empty"]
   | ["Pp_string", string]
+  | ["Pp_sized_string", number, string]
   | ["Pp_glue", Pp[]]
   | ["Pp_box", any, Pp]
   | ["Pp_tag", any, Pp]
