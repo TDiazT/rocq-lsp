@@ -58,6 +58,7 @@ import { InfoPanel, goalReq } from "./goals";
 import { FileProgressManager } from "./progress";
 import { coqPerfData, PerfDataView } from "./perf";
 import { sentenceNext, sentencePrevious } from "./edit";
+import { activateManualNavigation } from "./manualNavigation";
 import { HeatMap, HeatMapConfig } from "./heatmap";
 import { petanqueStart, petanqueRun, petSetClient } from "./petanque";
 import { debounce, throttle } from "throttle-debounce";
@@ -323,6 +324,13 @@ export function activateCoqLSP(
   // InfoPanel setup.
   infoPanel = new InfoPanel(context.extensionUri);
   context.subscriptions.push(infoPanel);
+
+  activateManualNavigation({
+    context,
+    getClient: () => client,
+    getInfoPanel: () => infoPanel,
+    getConfig: () => config,
+  });
 
   const goals = (editor: TextEditor) => {
     if (!client.isRunning()) return;

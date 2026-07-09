@@ -158,6 +158,26 @@
       {
         "command": "coq-lsp.petanque.run",
         "title": "Coq LSP: Run a tactic over a petanque session (Coq developer-only command)"
+      },
+      {
+        "command": "coq-lsp.toggleManualMode",
+        "title": "Coq LSP: Toggle manual navigation mode"
+      },
+      {
+        "command": "coq-lsp.stepForward",
+        "title": "Coq LSP: Step forward one sentence"
+      },
+      {
+        "command": "coq-lsp.stepBackward",
+        "title": "Coq LSP: Step backward one sentence"
+      },
+      {
+        "command": "coq-lsp.interpretToPoint",
+        "title": "Coq LSP: Interpret to point"
+      },
+      {
+        "command": "coq-lsp.interpretToEnd",
+        "title": "Coq LSP: Interpret to end of file"
       }
     ],
     "keybindings": [
@@ -178,6 +198,26 @@
         "key": "Alt+P",
         "mac": "Alt+P",
         "when": "editorTextFocus && (editorLangId == coq || editorTextFocus && editorLangId == markdown)"
+      },
+      {
+        "command": "coq-lsp.stepForward",
+        "key": "alt+down",
+        "when": "editorTextFocus && editorLangId == coq"
+      },
+      {
+        "command": "coq-lsp.stepBackward",
+        "key": "alt+up",
+        "when": "editorTextFocus && editorLangId == coq"
+      },
+      {
+        "command": "coq-lsp.interpretToPoint",
+        "key": "alt+right",
+        "when": "editorTextFocus && editorLangId == coq"
+      },
+      {
+        "command": "coq-lsp.interpretToEnd",
+        "key": "alt+end",
+        "when": "editorTextFocus && editorLangId == coq"
       }
     ],
     "viewsContainers": {
