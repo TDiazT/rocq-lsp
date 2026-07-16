@@ -17,6 +17,13 @@ body {
   gap: 4px;
 }
 
+.query-keyword {
+  background: var(--vscode-dropdown-background);
+  color: var(--vscode-dropdown-foreground);
+  border: 1px solid var(--vscode-dropdown-border, transparent);
+  padding: 4px 6px;
+}
+
 .query-input {
   flex: 1;
   background: var(--vscode-input-background);

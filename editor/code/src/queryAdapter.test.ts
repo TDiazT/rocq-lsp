@@ -1,26 +1,47 @@
 import { describe, expect, test } from "vitest";
 import {
-  buildAboutCommand,
+  buildQueryCommand,
   parseRunAtPointFeedback,
   resolveQueryPosition,
+  stripCoqErrorPrefix,
 } from "./queryAdapter";
 
-describe("buildAboutCommand", () => {
+describe("buildQueryCommand", () => {
   test("wraps a bare term as an About command", () => {
-    expect(buildAboutCommand("nat")).toBe("About nat.");
+    expect(buildQueryCommand("About", "nat")).toBe("About nat.");
+  });
+
+  test("wraps a bare term as a Check command", () => {
+    expect(buildQueryCommand("Check", "nat")).toBe("Check nat.");
   });
 
   test("trims surrounding whitespace", () => {
-    expect(buildAboutCommand("  nat  ")).toBe("About nat.");
+    expect(buildQueryCommand("About", "  nat  ")).toBe("About nat.");
   });
 
   test("does not duplicate a trailing period the user already typed", () => {
-    expect(buildAboutCommand("nat.")).toBe("About nat.");
+    expect(buildQueryCommand("Check", "nat.")).toBe("Check nat.");
   });
 
   test("returns null for an empty or whitespace-only term", () => {
-    expect(buildAboutCommand("")).toBeNull();
-    expect(buildAboutCommand("   ")).toBeNull();
+    expect(buildQueryCommand("About", "")).toBeNull();
+    expect(buildQueryCommand("Check", "   ")).toBeNull();
+  });
+});
+
+describe("stripCoqErrorPrefix", () => {
+  test("strips the internal 'Coq: ' prefix", () => {
+    expect(
+      stripCoqErrorPrefix(
+        "Coq: The reference nonexistent_ident was not found in the current environment.",
+      ),
+    ).toBe(
+      "The reference nonexistent_ident was not found in the current environment.",
+    );
+  });
+
+  test("leaves a message without the prefix untouched", () => {
+    expect(stripCoqErrorPrefix("Interrupted")).toBe("Interrupted");
   });
 });
 
