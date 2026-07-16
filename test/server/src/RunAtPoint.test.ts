@@ -120,3 +120,89 @@ test("run_at_point Check on an unknown identifier rejects with a Coq error", asy
     await server.exit();
   }
 });
+
+test("run_at_point executes Locate and returns its feedback", async () => {
+  const server = LanguageServer.start();
+  await server.initialize({ trace: "verbose" });
+  try {
+    const doc = await openFixtureAndWaitReady(server, "query.v");
+    const result = await requestRunAtPoint(
+      server,
+      doc.uri,
+      endOfDoc,
+      "Locate answer.",
+    );
+    expect(result.feedback).toHaveLength(1);
+    expect(result.feedback[0][1]).toMatch(/answer/);
+    expect(normalize(result)).toMatchSnapshot();
+  } finally {
+    await server.exit();
+  }
+});
+
+// Unlike Check/Print, Locate on an undefined identifier behaves like About:
+// the request succeeds, carrying "No object of basename ..." as ordinary
+// feedback rather than rejecting. Verified empirically, not assumed from
+// Check's -32003 behavior: Locate's job is name-table lookup (closer to
+// About's synterp-level nature), Check/Print's is elaborating the term,
+// which is what actually fails hard. See ADR-0006 addendum.
+test("run_at_point Locate on an unknown identifier succeeds with a not-found message", async () => {
+  const server = LanguageServer.start();
+  await server.initialize({ trace: "verbose" });
+  try {
+    const doc = await openFixtureAndWaitReady(server, "query.v");
+    const result = await requestRunAtPoint(
+      server,
+      doc.uri,
+      endOfDoc,
+      "Locate nonexistent_ident.",
+    );
+    expect(result.feedback).toHaveLength(1);
+    expect(result.feedback[0][1]).toMatch(/No object of basename/);
+  } finally {
+    await server.exit();
+  }
+});
+
+test("run_at_point executes Print and returns its feedback", async () => {
+  const server = LanguageServer.start();
+  await server.initialize({ trace: "verbose" });
+  try {
+    const doc = await openFixtureAndWaitReady(server, "query.v");
+    const result = await requestRunAtPoint(
+      server,
+      doc.uri,
+      endOfDoc,
+      "Print answer.",
+    );
+    expect(result.feedback).toHaveLength(1);
+    expect(result.feedback[0][1]).toMatch(/answer/);
+    expect(normalize(result)).toMatchSnapshot();
+  } finally {
+    await server.exit();
+  }
+});
+
+// Print on an undefined identifier behaves like Check (-32003, not a
+// successful message): both need to elaborate/resolve the reference, unlike
+// About/Locate's name-table-only lookups. See ADR-0006 addendum.
+test("run_at_point Print on an unknown identifier rejects with a Coq error", async () => {
+  const server = LanguageServer.start();
+  await server.initialize({ trace: "verbose" });
+  try {
+    const doc = await openFixtureAndWaitReady(server, "query.v");
+    await expect(
+      requestRunAtPoint(
+        server,
+        doc.uri,
+        endOfDoc,
+        "Print nonexistent_ident.",
+      ),
+    ).rejects.toMatchObject({
+      code: -32003,
+      message: expect.stringMatching(/^Coq: /),
+    });
+  } finally {
+    await server.exit();
+  }
+});

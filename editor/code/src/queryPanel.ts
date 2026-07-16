@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------------- */
-/* Query panel: About/Check over petanque/run_at_point (ADR-0005, ADR-0006).  */
-/* Locate/Print follow in a later PR; Search is out of scope (see ADR-0006):  */
-/* each keyword joins the closed whitelist in queryAdapter.ts.               */
+/* Query panel: About/Check/Locate/Print over petanque/run_at_point           */
+/* (ADR-0005, ADR-0006). Search is out of scope (see ADR-0006): it is         */
+/* async/streaming in VsRocq, not a fit for this request/response shape.     */
 /* -------------------------------------------------------------------------- */
 
 import {
@@ -223,6 +223,8 @@ export function activateQueryPanel(deps: Deps): QueryPanel {
 
   registerQueryCommand("coq-lsp.about", "About");
   registerQueryCommand("coq-lsp.check", "Check");
+  registerQueryCommand("coq-lsp.locate", "Locate");
+  registerQueryCommand("coq-lsp.print", "Print");
 
   return panel;
 }
