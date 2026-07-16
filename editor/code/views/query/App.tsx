@@ -5,9 +5,8 @@ import "./media/App.css";
 const vscode: WebviewApi<unknown> = acquireVsCodeApi();
 
 // Closed whitelist, mirrors queryAdapter.ts's QueryKeyword (see ADR-0006).
-// Locate/Print join once their PR lands.
-type QueryKeyword = "About" | "Check";
-const queryKeywords: QueryKeyword[] = ["About", "Check"];
+type QueryKeyword = "About" | "Check" | "Locate" | "Print";
+const queryKeywords: QueryKeyword[] = ["About", "Check", "Locate", "Print"];
 
 // Messages the extension host sends to this webview.
 type HostMessage =

@@ -15,6 +15,14 @@ describe("buildQueryCommand", () => {
     expect(buildQueryCommand("Check", "nat")).toBe("Check nat.");
   });
 
+  test("wraps a bare term as a Locate command", () => {
+    expect(buildQueryCommand("Locate", "nat")).toBe("Locate nat.");
+  });
+
+  test("wraps a bare term as a Print command", () => {
+    expect(buildQueryCommand("Print", "nat")).toBe("Print nat.");
+  });
+
   test("trims surrounding whitespace", () => {
     expect(buildQueryCommand("About", "  nat  ")).toBe("About nat.");
   });

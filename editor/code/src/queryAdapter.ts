@@ -1,8 +1,9 @@
 import type { Position } from "vscode-languageserver-types";
 
 // Closed whitelist of query keywords (see ADR-0005 point 5, ADR-0006 point 3).
-// Locate/Print join once their PR lands.
-export type QueryKeyword = "About" | "Check";
+// Search is out of scope (see ADR-0006 point 1): it is async/streaming in
+// VsRocq, not a fit for this request/response shape.
+export type QueryKeyword = "About" | "Check" | "Locate" | "Print";
 
 // Wraps a user-typed term into a fixed "<Keyword> <term>." Vernacular command
 // sent via petanque/run_at_point. The keyword is never user-chosen freely
@@ -18,11 +19,13 @@ export function buildQueryCommand(
 }
 
 // petanque/agent.ml's Error.to_string prefixes a Coq user error (wire code
-// -32003, e.g. "Check"/"Locate"/"Print" on an undefined identifier) with
-// "Coq: " before it reaches the client. About never hits this path (an
-// undefined identifier is successful About feedback, not a Coq error), but
-// the other query types do. ADR-0006 point 4: render it through the same
-// result channel as ordinary feedback, so strip the internal prefix first.
+// -32003) with "Coq: " before it reaches the client. Check/Print hit this on
+// an undefined identifier (elaborating/resolving the reference is what
+// fails); About/Locate never do (name-table lookups that report "not found"
+// as ordinary feedback instead, verified empirically in
+// test/server/src/RunAtPoint.test.ts, not assumed uniform across keywords).
+// ADR-0006 point 4 / addendum: render -32003 through the same result channel
+// as ordinary feedback regardless of keyword, so strip the internal prefix.
 export function stripCoqErrorPrefix(message: string): string {
   const prefix = "Coq: ";
   return message.startsWith(prefix) ? message.slice(prefix.length) : message;

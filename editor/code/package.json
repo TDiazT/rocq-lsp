@@ -186,6 +186,14 @@
       {
         "command": "coq-lsp.check",
         "title": "Coq LSP: Check"
+      },
+      {
+        "command": "coq-lsp.locate",
+        "title": "Coq LSP: Locate"
+      },
+      {
+        "command": "coq-lsp.print",
+        "title": "Coq LSP: Print"
       }
     ],
     "keybindings": [

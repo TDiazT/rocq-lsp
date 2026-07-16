@@ -32,3 +32,30 @@ exports[`run_at_point executes Check and returns its feedback 1`] = `
   "st": null,
 }
 `;
+
+exports[`run_at_point executes Locate and returns its feedback 1`] = `
+{
+  "feedback": [
+    [
+      3,
+      "Constant query.answer",
+    ],
+  ],
+  "proof_finished": true,
+  "st": null,
+}
+`;
+
+exports[`run_at_point executes Print and returns its feedback 1`] = `
+{
+  "feedback": [
+    [
+      3,
+      "answer = 42
+     : nat",
+    ],
+  ],
+  "proof_finished": true,
+  "st": null,
+}
+`;
