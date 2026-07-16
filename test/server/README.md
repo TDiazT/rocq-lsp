@@ -57,6 +57,9 @@ npx jest --verbose
 | Proof goals — at Qed, no goals (snapshot) | `proof/goals` | `ProofGoals.test.ts` | covered |
 | Proof goals — outside proof (snapshot) | `proof/goals` | `ProofGoals.test.ts` | covered |
 | Manual navigation — forward/backward/point/end, lazy checking (snapshot) | `proof/interpret` | `Interpret.test.ts`, `InterpretLazy.test.ts` | covered |
+| Query panel — About a defined term (snapshot) | `petanque/run_at_point` | `RunAtPoint.test.ts` | covered |
+| Query panel — About an unknown identifier (graceful feedback, not an error) | `petanque/run_at_point` | `RunAtPoint.test.ts` | covered |
+| Query panel — no elaborated node at point (`No_node_at_point`) | `petanque/run_at_point` | `RunAtPoint.test.ts` | covered |
 | File progress (extension) | `$/coq/fileProgress` | — | not yet covered |
 
 ## Adding tests

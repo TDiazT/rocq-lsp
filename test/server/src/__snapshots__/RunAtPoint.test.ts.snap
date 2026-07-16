@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`run_at_point executes About and returns its feedback 1`] = `
+{
+  "feedback": [
+    [
+      3,
+      "answer : nat
+
+answer is not universe polymorphic
+answer is transparent
+Expands to: Constant query.answer
+Declared in
+File "<root>/test/server/fixtures/query.v", line 2, characters 11-17",
+    ],
+  ],
+  "proof_finished": true,
+  "st": null,
+}
+`;

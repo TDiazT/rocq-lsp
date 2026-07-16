@@ -3,6 +3,7 @@
   "references": [
     { "path": "src" },
     { "path": "views/perf" },
-    { "path": "views/info" }
+    { "path": "views/info" },
+    { "path": "views/query" }
   ]
 }

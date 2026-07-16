@@ -178,6 +178,10 @@
       {
         "command": "coq-lsp.interpretToEnd",
         "title": "Coq LSP: Interpret to end of file"
+      },
+      {
+        "command": "coq-lsp.about",
+        "title": "Coq LSP: About"
       }
     ],
     "keybindings": [
@@ -218,6 +222,11 @@
         "command": "coq-lsp.interpretToEnd",
         "key": "alt+end",
         "when": "editorTextFocus && editorLangId == coq"
+      },
+      {
+        "command": "coq-lsp.about",
+        "key": "alt+a",
+        "when": "editorTextFocus && editorLangId == coq"
       }
     ],
     "viewsContainers": {
@@ -226,6 +235,13 @@
           "id": "coq-performance-report",
           "title": "Coq",
           "icon": "$(notebook)"
+        }
+      ],
+      "activitybar": [
+        {
+          "id": "rocq-lsp-sidebar",
+          "title": "Rocq",
+          "icon": "assets/icon-rocq-black.svg"
         }
       ]
     },
@@ -236,6 +252,13 @@
           "id": "coqPerfView",
           "name": "Performance Report",
           "icon": "$(database)"
+        }
+      ],
+      "rocq-lsp-sidebar": [
+        {
+          "type": "webview",
+          "id": "coqQueryView",
+          "name": "Query"
         }
       ]
     },
