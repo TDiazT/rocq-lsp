@@ -25,6 +25,7 @@ import * as lsp from "vscode-languageserver-types";
 import { BaseLanguageClient, RequestType } from "vscode-languageclient";
 import { InfoPanel } from "./goals";
 import { CoqSelector } from "./config";
+import { CheckpointStore } from "./checkpointStore";
 import {
   CoqLspClientConfig,
   GoalAnswer,
@@ -68,12 +69,20 @@ const manualModeKeys = [
 type ManualModeKey = (typeof manualModeKeys)[number];
 let settingsSnapshot: Partial<Record<ManualModeKey, unknown>> = {};
 
-export function activateManualNavigation(deps: Deps) {
+export interface ManualNavigation {
+  getCheckpoint(uri: string): lsp.Position | undefined;
+  // Whether manual stepping is currently on. The query panel (ADR-0005)
+  // needs this in addition to the checkpoint: "no checkpoint" means two
+  // different things depending on this flag (see resolveQueryPosition).
+  isManualModeOn(): boolean;
+}
+
+export function activateManualNavigation(deps: Deps): ManualNavigation {
   const { context } = deps;
 
   let manualOn = false;
   // checkpoint per document uri; absent = before the first sentence
-  const checkpoints = new Map<string, lsp.Position>();
+  const checkpoints = new CheckpointStore();
 
   // Diagnostics channel: every interpret request/answer, retract, and mode
   // transition lands here ("Output" panel → "Rocq Manual Navigation").
@@ -334,4 +343,9 @@ export function activateManualNavigation(deps: Deps) {
   // context key is still published for users' own `when` clauses.
   void commands.executeCommand("setContext", "coq-lsp.manualMode", false);
   renderStatus(window.activeTextEditor);
+
+  return {
+    getCheckpoint: (uri: string) => checkpoints.get(uri),
+    isManualModeOn: () => manualOn,
+  };
 }

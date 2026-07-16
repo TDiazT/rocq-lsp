@@ -1,0 +1,62 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.query-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  font-family: var(--vscode-font-family);
+  color: var(--vscode-foreground);
+}
+
+.query-bar {
+  display: flex;
+  gap: 4px;
+}
+
+.query-input {
+  flex: 1;
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border, transparent);
+  padding: 4px 6px;
+}
+
+.query-submit {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.query-submit:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+.query-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.query-status {
+  color: var(--vscode-descriptionForeground);
+  margin: 0;
+}
+
+.query-error {
+  color: var(--vscode-errorForeground);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.query-message {
+  white-space: pre-wrap;
+  font-family: var(--vscode-editor-font-family);
+  margin: 0;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--vscode-widget-border, transparent);
+}

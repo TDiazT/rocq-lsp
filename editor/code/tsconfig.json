@@ -4,6 +4,7 @@
     { "path": "src" },
     { "path": "views/perf" },
     { "path": "views/info" },
-    { "path": "views/goals" }
+    { "path": "views/goals" },
+    { "path": "views/query" }
   ]
 }

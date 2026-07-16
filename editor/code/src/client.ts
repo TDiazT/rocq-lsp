@@ -58,7 +58,8 @@ import { InfoPanel, goalReq } from "./goals";
 import { FileProgressManager } from "./progress";
 import { coqPerfData, PerfDataView } from "./perf";
 import { sentenceNext, sentencePrevious } from "./edit";
-import { activateManualNavigation } from "./manualNavigation";
+import { activateManualNavigation, ManualNavigation } from "./manualNavigation";
+import { activateQueryPanel } from "./queryPanel";
 import { HeatMap, HeatMapConfig } from "./heatmap";
 import { petanqueStart, petanqueRun, petSetClient } from "./petanque";
 import { debounce, throttle } from "throttle-debounce";
@@ -86,6 +87,10 @@ let client: BaseLanguageClient;
 
 // Lifetime of the info panel == extension lifetime.
 let infoPanel: InfoPanel;
+
+// Set once activateManualNavigation runs; the query panel (ADR-0005) reads
+// its checkpoint state to decide where About/Check/... should run.
+let manualNavigation: ManualNavigation;
 
 // Lifetime of the fileProgress setup == client lifetime
 let fileProgress: FileProgressManager;
@@ -325,11 +330,17 @@ export function activateCoqLSP(
   infoPanel = new InfoPanel(context.extensionUri);
   context.subscriptions.push(infoPanel);
 
-  activateManualNavigation({
+  manualNavigation = activateManualNavigation({
     context,
     getClient: () => client,
     getInfoPanel: () => infoPanel,
     getConfig: () => config,
+  });
+
+  activateQueryPanel({
+    context,
+    getClient: () => client,
+    getManualNavigation: () => manualNavigation,
   });
 
   const goals = (editor: TextEditor) => {
