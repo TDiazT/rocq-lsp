@@ -4,13 +4,19 @@ import "./media/App.css";
 
 const vscode: WebviewApi<unknown> = acquireVsCodeApi();
 
+// Closed whitelist, mirrors queryAdapter.ts's QueryKeyword (see ADR-0006).
+// Locate/Print join once their PR lands.
+type QueryKeyword = "About" | "Check";
+const queryKeywords: QueryKeyword[] = ["About", "Check"];
+
 // Messages the extension host sends to this webview.
 type HostMessage =
-  | { method: "prefill"; params: { term: string } }
+  | { method: "prefill"; params: { term: string; keyword: QueryKeyword } }
   | { method: "result"; params: { messages: string[] } }
   | { method: "error"; params: { message: string } };
 
 function App() {
+  const [keyword, setKeyword] = useState<QueryKeyword>("About");
   const [term, setTerm] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +31,7 @@ function App() {
         const { method, params } = event.data;
         switch (method) {
           case "prefill":
+            setKeyword(params.keyword);
             setTerm(params.term);
             inputRef.current?.focus();
             inputRef.current?.select();
@@ -58,7 +65,7 @@ function App() {
     if (term.trim() === "") return;
     setLoading(true);
     setError(null);
-    vscode.postMessage({ method: "runAbout", params: { term } });
+    vscode.postMessage({ method: "runQuery", params: { keyword, term } });
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
@@ -68,17 +75,28 @@ function App() {
   return (
     <main className="query-panel">
       <div className="query-bar">
+        <select
+          className="query-keyword"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value as QueryKeyword)}
+        >
+          {queryKeywords.map((k) => (
+            <option key={k} value={k}>
+              {k}
+            </option>
+          ))}
+        </select>
         <input
           ref={inputRef}
           type="text"
           className="query-input"
-          placeholder="About ..."
+          placeholder={`${keyword} ...`}
           value={term}
           onChange={(e) => setTerm(e.target.value)}
           onKeyDown={onKeyDown}
         />
         <button className="query-submit" onClick={submit} disabled={loading}>
-          About
+          {keyword}
         </button>
       </div>
       {loading && <p className="query-status">Running…</p>}

@@ -18,3 +18,17 @@ File "<root>/test/server/fixtures/query.v", line 2, characters 11-17",
   "st": null,
 }
 `;
+
+exports[`run_at_point executes Check and returns its feedback 1`] = `
+{
+  "feedback": [
+    [
+      3,
+      "answer
+     : nat",
+    ],
+  ],
+  "proof_finished": true,
+  "st": null,
+}
+`;

@@ -1,13 +1,31 @@
 import type { Position } from "vscode-languageserver-types";
 
-// Wraps a user-typed term into the fixed "About <term>." Vernacular command
-// sent via petanque/run_at_point. The keyword is never user-chosen (closed
-// whitelist, see ADR-0005): only the term is free text.
-export function buildAboutCommand(term: string): string | null {
+// Closed whitelist of query keywords (see ADR-0005 point 5, ADR-0006 point 3).
+// Locate/Print join once their PR lands.
+export type QueryKeyword = "About" | "Check";
+
+// Wraps a user-typed term into a fixed "<Keyword> <term>." Vernacular command
+// sent via petanque/run_at_point. The keyword is never user-chosen freely
+// (closed whitelist above): only the term is free text.
+export function buildQueryCommand(
+  keyword: QueryKeyword,
+  term: string,
+): string | null {
   const trimmed = term.trim();
   if (trimmed === "") return null;
   const withPeriod = trimmed.endsWith(".") ? trimmed : `${trimmed}.`;
-  return `About ${withPeriod}`;
+  return `${keyword} ${withPeriod}`;
+}
+
+// petanque/agent.ml's Error.to_string prefixes a Coq user error (wire code
+// -32003, e.g. "Check"/"Locate"/"Print" on an undefined identifier) with
+// "Coq: " before it reaches the client. About never hits this path (an
+// undefined identifier is successful About feedback, not a Coq error), but
+// the other query types do. ADR-0006 point 4: render it through the same
+// result channel as ordinary feedback, so strip the internal prefix first.
+export function stripCoqErrorPrefix(message: string): string {
+  const prefix = "Coq: ";
+  return message.startsWith(prefix) ? message.slice(prefix.length) : message;
 }
 
 // Where a query should run. Never the raw cursor: Flèche may not have

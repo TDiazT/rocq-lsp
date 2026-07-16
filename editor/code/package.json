@@ -182,6 +182,10 @@
       {
         "command": "coq-lsp.about",
         "title": "Coq LSP: About"
+      },
+      {
+        "command": "coq-lsp.check",
+        "title": "Coq LSP: Check"
       }
     ],
     "keybindings": [
@@ -226,6 +230,11 @@
       {
         "command": "coq-lsp.about",
         "key": "alt+a",
+        "when": "editorTextFocus && editorLangId == coq"
+      },
+      {
+        "command": "coq-lsp.check",
+        "key": "alt+c",
         "when": "editorTextFocus && editorLangId == coq"
       }
     ],
