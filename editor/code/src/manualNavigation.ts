@@ -9,7 +9,6 @@ import {
   languages,
   window,
   workspace,
-  ConfigurationTarget,
   ExtensionContext,
   Position,
   Range,
@@ -57,20 +56,19 @@ interface Deps {
   getConfig: () => CoqLspClientConfig;
 }
 
-// The workspace settings manual mode overrides while it's on. Snapshot their
-// pre-toggle workspace-level values here so toggle-off can restore them
-// exactly (including "no workspace override" = undefined) instead of
-// clobbering the user's own settings with hardcoded values.
+// Manual navigation manages no workspace setting on toggle.
 //
-// show_goals_on is deliberately NOT here: gating the cursor-follow goals
-// display is handled directly in client.ts's goalsCall by checking
-// isManualModeOn() in memory, not by writing through the settings system.
-// Doing it via settings left a stuck workspace-level override behind if the
-// window reloaded mid-session without an explicit toggle-off (found in QA,
-// 2026-07-17) — the in-memory check has no state to leak across reloads.
-const manualModeKeys = ["check_only_on_request", "check_on_scroll"] as const;
-type ManualModeKey = (typeof manualModeKeys)[number];
-let settingsSnapshot: Partial<Record<ManualModeKey, unknown>> = {};
+// check_only_on_request (checking schedule) and check_on_scroll (viewport
+// hint) are independent of the navigation driver (ADR-0004's "Resolution")
+// — a user may want eager checking, or lazy-with-background-scrolling,
+// while still stepping manually, so the toggle never touches either.
+//
+// show_goals_on (cursor stops choosing which goal is displayed) used to be
+// forced through the settings system too, but that left a stuck
+// workspace-level override behind if the window reloaded mid-session
+// without an explicit toggle-off (found in QA, 2026-07-17). It's gated
+// directly in memory instead, in client.ts's goalsCall, by checking
+// isManualModeOn() — no setting to leak across reloads.
 
 export interface ManualNavigation {
   getCheckpoint(uri: string): lsp.Position | undefined;
@@ -131,34 +129,17 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
 
   async function toggleManual() {
     manualOn = !manualOn;
-    const ws = workspace.getConfiguration("coq-lsp");
-    // Manual = lazy server scheduling + all automatic client triggers off.
-    // Snapshot/restore the workspace-level values on the way in/out, rather
-    // than hardcoding stock defaults, so we don't clobber whatever the user
-    // (or their workspace settings.json) had configured before toggling.
-    const t = ConfigurationTarget.Workspace;
+    // Manual = the cursor stops choosing which goal is displayed; stepping
+    // does instead (enforced in memory, no settings read or written here —
+    // see the comment above activateManualNavigation for why). Checking
+    // schedule and viewport scrolling are the user's own independent
+    // settings, untouched here (ADR-0004's "Resolution").
     if (manualOn) {
-      for (const key of manualModeKeys) {
-        settingsSnapshot[key] = ws.inspect(key)?.workspaceValue;
-      }
-      log.appendLine(
-        `[toggle] manual ON; snapshot: ${JSON.stringify(settingsSnapshot)}`
-      );
-      await ws.update("check_only_on_request", true, t);
-      await ws.update("check_on_scroll", false, t);
-      window.setStatusBarMessage("Manual mode ON (server lazy, triggers gated)", 3000);
+      log.appendLine("[toggle] manual ON");
+      window.setStatusBarMessage("Manual mode ON (goal display no longer follows the cursor)", 3000);
     } else {
-      // Restore each key to its pre-toggle workspace value; a snapshot of
-      // `undefined` means there was no workspace override, and `update`
-      // with `undefined` removes the override rather than setting it.
-      log.appendLine(
-        `[toggle] manual OFF; restoring: ${JSON.stringify(settingsSnapshot)}`
-      );
-      for (const key of manualModeKeys) {
-        await ws.update(key, settingsSnapshot[key], t);
-      }
-      settingsSnapshot = {};
-      window.setStatusBarMessage("Restored previous checking settings", 3000);
+      log.appendLine("[toggle] manual OFF");
+      window.setStatusBarMessage("Back to Auto (goal display follows the cursor again)", 3000);
 
       for (const editor of window.visibleTextEditors) {
         editor.setDecorations(checkedDecoration, []);
@@ -186,17 +167,17 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
     const generation = deps.getInfoPanel().beginRender();
 
     // Stepping IS manual navigation: entering it via any stepping command
-    // flips into manual mode (settings snapshot + gated triggers), so the
-    // panel has a single writer — otherwise the cursor-following goals
-    // update races with the stepping one and the panel flip-flops between
-    // the two query positions.
+    // flips into manual mode (settings snapshot + cursor stops choosing the
+    // displayed goal), so the panel has a single writer — otherwise the
+    // cursor-following goals update races with the stepping one and the
+    // panel flip-flops between the two query positions.
     if (!manualOn) {
       await toggleManual();
       if (!autoEnterNoticeShown) {
         autoEnterNoticeShown = true;
         void window.showInformationMessage(
-          "Manual navigation on: automatic checking triggers are gated " +
-            "while stepping. Toggle off from the “Rocq: Manual” status bar item."
+          "Manual navigation on: the goals panel now follows your steps, " +
+            "not the cursor. Toggle off from the “Rocq: Manual” status bar item."
         );
       }
     }

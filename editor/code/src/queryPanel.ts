@@ -14,7 +14,7 @@ import {
   window,
 } from "vscode";
 import { BaseLanguageClient, RequestType } from "vscode-languageclient";
-import { CoqSelector } from "./config";
+import { CoqSelector, CoqLspServerConfig } from "./config";
 import { ManualNavigation } from "./manualNavigation";
 import {
   buildQueryCommand,
@@ -54,6 +54,11 @@ interface Deps {
   context: ExtensionContext;
   getClient: () => BaseLanguageClient;
   getManualNavigation: () => ManualNavigation;
+  // The server's checking schedule (check_only_on_request), distinct from
+  // ManualNavigation's own state (ADR-0004's "Resolution"): an eager
+  // schedule always resolves a query to document-end, regardless of
+  // whether navigation is manual or where its checkpoint is.
+  getServerConfig: () => CoqLspServerConfig;
 }
 
 export class QueryPanel {
@@ -161,7 +166,9 @@ export class QueryPanel {
       line: lastLine.range.end.line,
       character: lastLine.range.end.character,
     };
+    const checkingIsEager = !this.deps.getServerConfig().check_only_on_request;
     const position = resolveQueryPosition(
+      checkingIsEager,
       manualNavigation.isManualModeOn(),
       checkpoint,
       documentEnd,
