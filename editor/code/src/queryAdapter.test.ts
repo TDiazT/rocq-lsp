@@ -55,32 +55,51 @@ describe("stripCoqErrorPrefix", () => {
 
 describe("resolveQueryPosition", () => {
   const documentEnd = { line: 10, character: 0 };
+  const checkpoint = { line: 3, character: 6 };
 
-  test("uses the navigation checkpoint when one exists", () => {
-    const checkpoint = { line: 3, character: 6 };
-    expect(resolveQueryPosition(false, checkpoint, documentEnd)).toEqual(
-      checkpoint,
-    );
-    expect(resolveQueryPosition(true, checkpoint, documentEnd)).toEqual(
-      checkpoint,
-    );
-  });
-
-  test("falls back to the end of the document when checking is not manual", () => {
-    expect(resolveQueryPosition(false, undefined, documentEnd)).toEqual(
+  // Eager checking short-circuits everything else: the whole file is always
+  // elaborated, so a query always runs at document-end, even past a
+  // checkpoint set early in the file, and even with no checkpoint at all
+  // (ADR-0004's "Resolution"; a deliberate improvement over rocq.nvim's
+  // Session:_query_position, which always prefers the checkpoint once set).
+  test("under an eager schedule, always resolves to document-end, ignoring the checkpoint", () => {
+    expect(resolveQueryPosition(true, true, checkpoint, documentEnd)).toEqual(
       documentEnd,
     );
+    expect(
+      resolveQueryPosition(true, false, checkpoint, documentEnd),
+    ).toEqual(documentEnd);
+    expect(
+      resolveQueryPosition(true, true, undefined, documentEnd),
+    ).toEqual(documentEnd);
+  });
+
+  test("under a lazy schedule, uses the navigation checkpoint when one exists", () => {
+    expect(
+      resolveQueryPosition(false, false, checkpoint, documentEnd),
+    ).toEqual(checkpoint);
+    expect(
+      resolveQueryPosition(false, true, checkpoint, documentEnd),
+    ).toEqual(checkpoint);
+  });
+
+  test("under a lazy schedule, falls back to the end of the document when checking is not manual", () => {
+    expect(
+      resolveQueryPosition(false, false, undefined, documentEnd),
+    ).toEqual(documentEnd);
   });
 
   // Regression: before this fix, About in manual mode with no checkpoint yet
   // fell back to documentEnd, which — if the file had been fully checked
   // *before* switching to manual mode — silently answered from that stale,
   // pre-manual-mode elaboration instead of refusing. Manual mode with no
-  // checkpoint means "nothing confirmed yet," so it must resolve to before
-  // the first sentence (which the server correctly rejects with
-  // No_node_at_point), never to the document's end.
-  test("resolves to before the first sentence in manual mode with no checkpoint yet", () => {
-    expect(resolveQueryPosition(true, undefined, documentEnd)).toEqual({
+  // checkpoint means "nothing confirmed yet," so under a lazy schedule it
+  // must resolve to before the first sentence (which the server correctly
+  // rejects with No_node_at_point), never to the document's end.
+  test("under a lazy schedule, resolves to before the first sentence in manual mode with no checkpoint yet", () => {
+    expect(
+      resolveQueryPosition(false, true, undefined, documentEnd),
+    ).toEqual({
       line: 0,
       character: 0,
     });

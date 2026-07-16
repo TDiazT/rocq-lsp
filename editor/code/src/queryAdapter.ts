@@ -32,18 +32,30 @@ export function stripCoqErrorPrefix(message: string): string {
 }
 
 // Where a query should run. Never the raw cursor: Flèche may not have
-// elaborated that far yet (see ADR-0005). The checkpoint always wins when
-// set. Otherwise: in manual mode, "no checkpoint" means nothing has been
-// confirmed yet, so this resolves to before the first sentence, NOT the
-// document end, which may hold stale elaboration from before manual mode
-// was switched on (a full-check-then-switch-to-manual bug found in QA,
-// 2026-07-16). Outside manual mode there's no checkpoint concept, so the
-// document end (the whole file having been checked) is the right fallback.
+// elaborated that far yet (see ADR-0005).
+//
+// checkingIsEager short-circuits everything else (ADR-0004's "Resolution"):
+// under an eager checking schedule the whole file is always fully
+// elaborated, so a query always runs at document-end, ignoring the
+// checkpoint entirely — otherwise a checkpoint early in the file would
+// starve a query for a term defined later on, even though the server
+// already knows about it. This is a deliberate improvement over
+// rocq.nvim's `Session:_query_position` (`lua/rocq/core/session.lua:143`),
+// which always prefers the checkpoint once one is set.
+//
+// Under a lazy schedule the pre-existing logic applies: the checkpoint wins
+// when set (only what's been stepped through is guaranteed elaborated); with
+// no checkpoint, manual mode resolves to before the first sentence (nothing
+// confirmed yet — resolving to document-end here previously surfaced stale,
+// pre-manual-mode elaboration, a bug found in QA, 2026-07-16), while
+// non-manual navigation (no checkpoint concept) falls back to document-end.
 export function resolveQueryPosition(
+  checkingIsEager: boolean,
   manualModeOn: boolean,
   checkpoint: Position | undefined,
   documentEnd: Position,
 ): Position {
+  if (checkingIsEager) return documentEnd;
   if (checkpoint) return checkpoint;
   return manualModeOn ? { line: 0, character: 0 } : documentEnd;
 }

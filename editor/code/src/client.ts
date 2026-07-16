@@ -341,6 +341,7 @@ export function activateCoqLSP(
     context,
     getClient: () => client,
     getManualNavigation: () => manualNavigation,
+    getServerConfig: () => serverConfig,
   });
 
   const goals = (editor: TextEditor) => {
