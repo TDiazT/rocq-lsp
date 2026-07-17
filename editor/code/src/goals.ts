@@ -32,6 +32,25 @@ export class InfoPanel {
   private extensionUri: Uri;
   private listeners: Array<(goals: GoalAnswer<String, String>) => void> = [];
 
+  // Coordinates the panel's two writers (cursor-follow goals-on-cursor
+  // requests and manual-navigation stepping, see manualNavigation.ts):
+  // whichever reserved the latest generation wins. A caller reserves one
+  // with beginRender() before starting its async work, and passes it back
+  // to requestSent/requestDisplay/requestError; a response for an older
+  // reservation that resolves late is dropped instead of overwriting a
+  // fresher render (a race found in QA, 2026-07-17: a stale goals-on-cursor
+  // response for a not-yet-elaborated position landed after a correct
+  // manual-stepping answer and blanked the panel).
+  private generation = 0;
+
+  beginRender(): number {
+    return ++this.generation;
+  }
+
+  private isStale(generation: number): boolean {
+    return generation !== this.generation;
+  }
+
   constructor(extensionUri: Uri) {
     this.extensionUri = extensionUri;
 
@@ -125,18 +144,23 @@ export class InfoPanel {
     this.panel?.webview.postMessage({ method, params });
   }
 
-  // notify the display that we are waiting for info
-  requestSent(cursor: GoalRequest) {
+  // notify the display that we are waiting for info. generation must come
+  // from beginRender(), reserved before starting the request that will
+  // eventually resolve into requestDisplay/requestError.
+  requestSent(cursor: GoalRequest, generation: number) {
+    if (this.isStale(generation)) return;
     this.postMessage({ method: "waitingForInfo", params: cursor });
   }
 
   // notify the info panel that we have fresh goals to render
-  requestDisplay(goals: GoalAnswer<BoxString, PpString>) {
+  requestDisplay(goals: GoalAnswer<BoxString, PpString>, generation: number) {
+    if (this.isStale(generation)) return;
     this.postMessage({ method: "renderGoals", params: goals });
   }
 
   // notify the info panel that we found an error
-  requestError(e: ErrorData) {
+  requestError(e: ErrorData, generation: number) {
+    if (this.isStale(generation)) return;
     this.postMessage({ method: "infoError", params: e });
   }
 
@@ -146,25 +170,36 @@ export class InfoPanel {
   ) {
     let message =
       "Support for Goal Display is not available (yet) under Visual Studio Live Share";
-    this.requestError({ textDocument, position, message });
+    this.requestError({ textDocument, position, message }, this.beginRender());
   }
 
-  // LSP Protocol extension for Goals
-  updateInfoPanelForCursor(client: BaseLanguageClient, params: GoalRequest) {
+  // LSP Protocol extension for Goals. generation is shared with the sibling
+  // updateAPIClientForCursor call for the same cursor event (both reserved
+  // once by updateFromServer) — reserving separately per call would make
+  // each call's own successful response look stale to the other.
+  updateInfoPanelForCursor(
+    client: BaseLanguageClient,
+    params: GoalRequest,
+    generation: number
+  ) {
     params = { ...params, pp_format: "Pp" };
-    this.requestSent(params);
+    this.requestSent(params, generation);
     client.sendRequest(goalReq, params).then(
-      (goals) => this.requestDisplay(goals),
+      (goals) => this.requestDisplay(goals, generation),
       (error: ResponseError<void>) => {
         let textDocument = params.textDocument;
         let position = params.position;
         let message = error.message;
-        this.requestError({ textDocument, position, message });
+        this.requestError({ textDocument, position, message }, generation);
       }
     );
   }
 
-  updateAPIClientForCursor(client: BaseLanguageClient, params: GoalRequest) {
+  updateAPIClientForCursor(
+    client: BaseLanguageClient,
+    params: GoalRequest,
+    generation: number
+  ) {
     if (this.listeners.length > 0) {
       params.pp_format = "Str";
       client.sendRequest(goalReq, params).then(
@@ -178,7 +213,7 @@ export class InfoPanel {
           let textDocument = params.textDocument;
           let position = params.position;
           let message = error.message;
-          this.requestError({ textDocument, position, message });
+          this.requestError({ textDocument, position, message }, generation);
         }
       );
     }
@@ -199,7 +234,8 @@ export class InfoPanel {
     // let command = "idtac.";
     // let cursor: GoalRequest = { textDocument, position, command };
     let cursor: GoalRequest = { textDocument, position, pp_format, compact };
-    this.updateInfoPanelForCursor(client, cursor);
-    this.updateAPIClientForCursor(client, cursor);
+    const generation = this.beginRender();
+    this.updateInfoPanelForCursor(client, cursor, generation);
+    this.updateAPIClientForCursor(client, cursor, generation);
   }
 }
