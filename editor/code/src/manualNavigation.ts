@@ -57,15 +57,18 @@ interface Deps {
   getConfig: () => CoqLspClientConfig;
 }
 
-// The three workspace settings manual mode overrides while it's on. Snapshot
-// their pre-toggle workspace-level values here so toggle-off can restore
-// them exactly (including "no workspace override" = undefined) instead of
+// The workspace settings manual mode overrides while it's on. Snapshot their
+// pre-toggle workspace-level values here so toggle-off can restore them
+// exactly (including "no workspace override" = undefined) instead of
 // clobbering the user's own settings with hardcoded values.
-const manualModeKeys = [
-  "check_only_on_request",
-  "check_on_scroll",
-  "show_goals_on",
-] as const;
+//
+// show_goals_on is deliberately NOT here: gating the cursor-follow goals
+// display is handled directly in client.ts's goalsCall by checking
+// isManualModeOn() in memory, not by writing through the settings system.
+// Doing it via settings left a stuck workspace-level override behind if the
+// window reloaded mid-session without an explicit toggle-off (found in QA,
+// 2026-07-17) — the in-memory check has no state to leak across reloads.
+const manualModeKeys = ["check_only_on_request", "check_on_scroll"] as const;
 type ManualModeKey = (typeof manualModeKeys)[number];
 let settingsSnapshot: Partial<Record<ManualModeKey, unknown>> = {};
 
@@ -143,7 +146,6 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
       );
       await ws.update("check_only_on_request", true, t);
       await ws.update("check_on_scroll", false, t);
-      await ws.update("show_goals_on", 0, t);
       window.setStatusBarMessage("Manual mode ON (server lazy, triggers gated)", 3000);
     } else {
       // Restore each key to its pre-toggle workspace value; a snapshot of
@@ -174,6 +176,14 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
     if (languages.match(CoqSelector.owned, editor.document) < 1) return;
     const client = deps.getClient();
     if (!client?.isRunning()) return;
+
+    // Reserved up front (before the toggleManual()/request awaits below) so
+    // it beats any goals-on-cursor request already in flight from the
+    // cursor move that positioned this very step — that request's own
+    // generation was reserved earlier and is now stale, so its response
+    // can no longer overwrite this step's render whenever it resolves (a
+    // race found in QA, 2026-07-17; see goals.ts's InfoPanel.beginRender).
+    const generation = deps.getInfoPanel().beginRender();
 
     // Stepping IS manual navigation: entering it via any stepping command
     // flips into manual mode (settings snapshot + gated triggers), so the
@@ -250,7 +260,7 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
     // Goals panel: the InterpretAnswer already carries the stepped
     // sentence's goals, messages and error (attributed to the node itself,
     // so the F5 boundary footgun doesn't apply) — display it directly.
-    deps.getInfoPanel().requestDisplay(answer);
+    deps.getInfoPanel().requestDisplay(answer, generation);
 
     if (mode === "forward" && answer.completed) {
       window.setStatusBarMessage("End of document", 2000);
@@ -285,6 +295,7 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
   async function retractTo(document: TextDocument, at: lsp.Position) {
     const client = deps.getClient();
     if (!client?.isRunning()) return;
+    const generation = deps.getInfoPanel().beginRender();
     const uri = document.uri.toString();
     const params: InterpretParams = {
       textDocument: { uri, version: document.version },
@@ -314,7 +325,7 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
       if (ed.document.uri.toString() === uri) renderDecoration(ed);
     }
     renderStatus(window.activeTextEditor);
-    deps.getInfoPanel().requestDisplay(answer);
+    deps.getInfoPanel().requestDisplay(answer, generation);
   }
 
   let retractTimer: ReturnType<typeof setTimeout> | undefined;

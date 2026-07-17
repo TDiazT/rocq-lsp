@@ -390,7 +390,13 @@ export function activateCoqLSP(
     // When evt.kind is null, it often means it was due to an
     // edit, we want to re-trigger in that case
 
-    const show = kind <= config.show_goals_on;
+    // Manual navigation owns the goals panel once it's on: the cursor no
+    // longer chooses which goal is displayed, stepping does (checked here
+    // directly, in memory, rather than by writing show_goals_on through the
+    // settings system — that used to leave a stuck workspace-level override
+    // behind if the window reloaded mid-session without an explicit
+    // toggle-off; see ADR-0004's "Resolution" follow-up).
+    const show = kind <= config.show_goals_on && !manualNavigation.isManualModeOn();
 
     if (show) {
       goals(textEditor);
