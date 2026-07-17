@@ -100,6 +100,10 @@ export default function App() {
 
   useEffect(() => {
     window.addEventListener("message", handleMessage);
+    // Handshake with InfoPanel (src/goals.ts): messages posted before this
+    // listener existed are queued host-side and flushed on "ready", so it
+    // must be sent only once the listener is in place.
+    vscode?.postMessage({ command: "ready" });
     return () => window.removeEventListener("message", handleMessage);
   }, [handleMessage]);
 

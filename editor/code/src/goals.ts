@@ -43,6 +43,12 @@ export class InfoPanel {
   // manual-stepping answer and blanked the panel).
   private generation = 0;
 
+  // Messages posted between panel creation and the webview's "ready"
+  // handshake would be dropped by the not-yet-listening webview; they wait
+  // here and are flushed in creation order when "ready" arrives.
+  private webviewReady = false;
+  private pendingMessages: CoqMessagePayload[] = [];
+
   beginRender(): number {
     return ++this.generation;
   }
@@ -78,6 +84,7 @@ export class InfoPanel {
 
   panelFactory() {
     let webviewOpts = { enableScripts: true, enableFindWidget: true };
+    this.webviewReady = false;
     this.panel = window.createWebviewPanel(
       "goals",
       "Goals",
@@ -117,10 +124,22 @@ export class InfoPanel {
     // The panel was closed by the user, guard!
     this.panel.onDidDispose(() => {
       this.panel = null;
+      this.webviewReady = false;
+      this.pendingMessages = [];
     });
 
     this.panel.webview.onDidReceiveMessage((msg) => {
-      if (msg?.command === "openGoalSettings") {
+      if (msg?.command === "ready") {
+        // The webview drops messages posted before its script has
+        // registered a listener, so everything sent since creation waits
+        // in pendingMessages until this handshake arrives.
+        this.webviewReady = true;
+        const pending = this.pendingMessages;
+        this.pendingMessages = [];
+        for (const m of pending) {
+          this.panel?.webview.postMessage(m);
+        }
+      } else if (msg?.command === "openGoalSettings") {
         commands.executeCommand("workbench.action.openSettings", "coq-lsp");
       }
     });
@@ -139,9 +158,17 @@ export class InfoPanel {
       }
     }
   }
-  postMessage({ method, params }: CoqMessagePayload) {
+  postMessage(payload: CoqMessagePayload) {
     this.ensurePanel();
-    this.panel?.webview.postMessage({ method, params });
+    if (!this.webviewReady) {
+      // Panel just created (or still booting): the webview would silently
+      // drop this message, so hold it until the "ready" handshake. Without
+      // this, the first meaningful render of a session was lost and the
+      // panel stayed on its initial empty state.
+      this.pendingMessages.push(payload);
+      return;
+    }
+    this.panel?.webview.postMessage(payload);
   }
 
   // notify the display that we are waiting for info. generation must come
