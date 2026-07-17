@@ -81,7 +81,12 @@ export interface ManualNavigation {
 export function activateManualNavigation(deps: Deps): ManualNavigation {
   const { context } = deps;
 
-  let manualOn = false;
+  // Factory default is manual stepping, not cursor-follow (ADR-0004's
+  // "Default follow-up"): combined with the upstream defaults
+  // check_only_on_request: true and check_on_scroll: true, a fresh install
+  // gets rocqtop-style stepping with viewport-driven background checking.
+  // In-memory only; toggling back to Auto lasts for the session.
+  let manualOn = true;
   // checkpoint per document uri; absent = before the first sentence
   const checkpoints = new CheckpointStore();
 
@@ -91,8 +96,11 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
   context.subscriptions.push(log);
   const fmtPos = (p?: lsp.Position) => (p ? `${p.line}:${p.character}` : "∅");
 
-  // The auto-enter notice is a real toast the first time (a status-bar
-  // message alone is easy to miss); later transitions stay in the status bar.
+  // Auto-enter (stepping while in Auto flips back to manual) no longer
+  // happens on the first step — the session starts in manual — only after
+  // an explicit toggle to Auto. It still silently changes the mode, so the
+  // first such flip per session gets a real toast (a status-bar message
+  // alone is easy to miss); later ones stay in the status bar.
   let autoEnterNoticeShown = false;
 
   const status: StatusBarItem = window.createStatusBarItem(
@@ -167,8 +175,8 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
     const generation = deps.getInfoPanel().beginRender();
 
     // Stepping IS manual navigation: entering it via any stepping command
-    // flips into manual mode (settings snapshot + cursor stops choosing the
-    // displayed goal), so the panel has a single writer — otherwise the
+    // flips into manual mode (the cursor stops choosing the displayed
+    // goal), so the panel has a single writer — otherwise the
     // cursor-following goals update races with the stepping one and the
     // panel flip-flops between the two query positions.
     if (!manualOn) {
@@ -333,7 +341,7 @@ export function activateManualNavigation(deps: Deps): ManualNavigation {
 
   // The keybindings are always live in Rocq buffers (VsRocq precedent); the
   // context key is still published for users' own `when` clauses.
-  void commands.executeCommand("setContext", "coq-lsp.manualMode", false);
+  void commands.executeCommand("setContext", "coq-lsp.manualMode", manualOn);
   renderStatus(window.activeTextEditor);
 
   return {
